@@ -23,4 +23,6 @@ public class Doctor {
     private Integer status;
     //对应用户id
     private Integer userId;
+    //简介
+    private String introduction;
 }

@@ -16,4 +16,9 @@ public class DoctorService {
         List<Doctor> doctors = doctorMapper.selectDocByHidAndDepId(hid, depId);
         return doctors;
     }
+
+    public Doctor selectDoctorById(String doctorId) {
+        Doctor doctor = doctorMapper.selectDoctorById(doctorId);
+        return doctor;
+    }
 }

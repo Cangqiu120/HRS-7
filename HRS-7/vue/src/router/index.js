@@ -24,6 +24,16 @@ const routes = [
         name: 'HospitalDetail',
         meta: { name: '医院详情' },
         component: () => import('../views/manager/HospitalDetail') },
+      {
+        path: '/doctor/:hospitalId/:departmentId', // 定义路由路径
+        name: 'Doctor', // 路由名称
+        component: () => import('../views/manager/Doctor.vue') // 对应的组件
+      },
+      {
+        path: '/registration/:doctorId', // 定义路由路径,
+        name: 'Registration', // 路由名称
+        component: () => import('../views/manager/Registration.vue') // 对应的组件
+      },
       { path: '403', name: 'NoAuth', meta: { name: '无权限' }, component: () => import('../views/manager/403') },
       { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('../views/manager/Home') },
       { path: 'admin', name: 'Admin', meta: { name: '管理员信息' }, component: () => import('../views/manager/Admin') },

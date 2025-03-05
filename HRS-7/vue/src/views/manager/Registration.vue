@@ -2,8 +2,7 @@
   <div class="registration-page">
     <div class="doctor-info" v-if="doctor">
       <h2>{{ doctor.name }} - {{ getDoctorTitle(doctor.status) }}</h2>
-      <!-- 这里可以添加更多医生详细信息，如擅长领域、简介等 -->
-      <p>其他详细信息...</p>
+      <p>{{doctor.introduction}}</p>
     </div>
     <div class="registration-info" v-if="doctor">
       <h2>挂号信息</h2>
@@ -41,7 +40,7 @@ export default {
   },
   methods: {
     fetchDoctorInfo(doctorId) {
-      this.$request.get('/doctor/getDoctorById', {
+      this.$request.get('/doctor/selectDoctorById', {
         params: { doctorId }
       })
           .then(response => {
