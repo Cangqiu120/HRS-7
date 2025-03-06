@@ -34,6 +34,7 @@ export default {
   name: 'Reservation',
   data() {
     return {
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       searchKeyword: '', // 搜索关键词
       hospitalList: [], // 医院列表
       currentPage: 1, // 当前页码

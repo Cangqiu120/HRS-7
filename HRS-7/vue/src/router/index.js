@@ -34,6 +34,21 @@ const routes = [
         name: 'Registration', // 路由名称
         component: () => import('../views/manager/Registration.vue') // 对应的组件
       },
+      {
+        path: '/submit-registration',
+        name: 'SubmitRegistration',
+        component: () => import('../views/manager/SubmitRegistration.vue') // 提交挂号界面的组件
+      },
+      {
+        path: '/registration-success',
+        name: 'RegistrationSuccess',
+        component: ()=> import('../views/manager/RegistrationSuccess.vue') // 挂号成功界面的组件
+      },
+      {
+        path:'/registration-detail',
+        name:'OrderDetail',
+        component:()=>import('../views/manager/RegistrationDetail.vue')
+      },
       { path: '403', name: 'NoAuth', meta: { name: '无权限' }, component: () => import('../views/manager/403') },
       { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('../views/manager/Home') },
       { path: 'admin', name: 'Admin', meta: { name: '管理员信息' }, component: () => import('../views/manager/Admin') },

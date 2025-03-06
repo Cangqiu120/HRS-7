@@ -27,6 +27,7 @@ export default {
   name: 'HospitalDetail',
   data() {
     return {
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       hospital: {
         name: '',
         address: '',

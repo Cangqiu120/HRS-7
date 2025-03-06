@@ -27,6 +27,8 @@ public class Account {
     /** 头像 */
     private String avatar;
 
+    private String gender;
+
     private String token;
 
 }

@@ -35,6 +35,6 @@ public interface AdminMapper {
     */
     List<Admin> selectAll(Admin admin);
 
-    @Select("select * from admin where username = #{username}")
+    @Select("select * from `cq-hospital`.user where username = #{username}")
     Admin selectByUsername(String username);
 }

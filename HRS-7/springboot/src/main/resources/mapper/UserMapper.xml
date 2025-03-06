@@ -11,7 +11,7 @@
     <select id="selectAll" resultType="com.example.entity.User">
         select
         <include refid="Base_Column_List" />
-        from 'cq-hospital'.user
+        from `cq-hospital`.user
         <where>
             <if test="id != null"> and id= #{id}</if>
             <if test="username != null"> and username like concat('%', #{username}, '%')</if>
@@ -27,17 +27,17 @@
     <select id="selectById" resultType="com.example.entity.User">
         select
         <include refid="Base_Column_List" />
-        from 'cq-hospital'.user
+        from `cq-hospital`.user
         where id = #{id}
     </select>
 
     <delete id="deleteById">
-        delete from 'cq-hospital'.user
+        delete from `cq-hospital`.user
         where  id = #{id}
     </delete>
 
     <insert id="insert" parameterType="com.example.entity.User" useGeneratedKeys="true">
-        insert into 'cq-hospital'.user
+        insert into `cq-hospital`.user
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="id != null">id,</if>
                 <if test="username != null">username,</if>
@@ -61,7 +61,7 @@
     </insert>
 
     <update id="updateById" parameterType="com.example.entity.User">
-        update 'cq-hospital'.user
+        update `cq-hospital`.user
         <set>
             <if test="username != null">
                 username = #{username},

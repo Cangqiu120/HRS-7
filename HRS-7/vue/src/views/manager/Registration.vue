@@ -2,16 +2,28 @@
   <div class="registration-page">
     <div class="doctor-info" v-if="doctor">
       <h2>{{ doctor.name }} - {{ getDoctorTitle(doctor.status) }}</h2>
-      <p>{{doctor.introduction}}</p>
+      <p>{{ doctor.introduction }}</p>
     </div>
     <div class="registration-info" v-if="doctor">
       <h2>挂号信息</h2>
       <ul>
-        <li v-for="(date, index) in getDates()" :key="index">
-          {{ date }} - 上午 - 价格：{{ getPrice(doctor.status, '上午') }} 元
+        <!-- 上午时间段 -->
+        <li v-for="(timeSlot, index) in morningTimeSlots" :key="index">
+          <router-link
+              :to="getRegistrationRoute(getDates()[0], timeSlot)"
+              class="registration-link"
+          >
+            {{ getDates()[0] }} - {{ timeSlot }} - 价格：{{ getPrice(doctor.status, timeSlot) }} 元
+          </router-link>
         </li>
-        <li v-for="(date, index) in getDates()" :key="index + 100">
-          {{ date }} - 下午 - 价格：{{ getPrice(doctor.status, '下午') }} 元
+        <!-- 下午时间段 -->
+        <li v-for="(timeSlot, index) in afternoonTimeSlots" :key="index + 100">
+          <router-link
+              :to="getRegistrationRoute(getDates()[0], timeSlot)"
+              class="registration-link"
+          >
+            {{ getDates()[0] }} - {{ timeSlot }} - 价格：{{ getPrice(doctor.status, timeSlot) }} 元
+          </router-link>
         </li>
       </ul>
     </div>
@@ -26,8 +38,11 @@ export default {
   name: 'Registration',
   data() {
     return {
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       doctor: null,
-      isLoading: true
+      isLoading: true,
+      morningTimeSlots: ['上午 9-10点', '上午 10-11点', '上午 11-12点'], // 上午时间段
+      afternoonTimeSlots: ['下午 2-3点', '下午 3-4点', '下午 4-5点', '下午 5-6点'] // 下午时间段
     };
   },
   created() {
@@ -59,6 +74,17 @@ export default {
             this.isLoading = false;
           });
     },
+    getRegistrationRoute(date, timeSlot) {
+      return {
+        name: 'SubmitRegistration', // 提交挂号界面的路由名称
+        query: {
+          doctorId: this.$route.params.doctorId, // 医生 ID
+          date: date, // 挂号日期
+          timeSlot: timeSlot, // 具体时间段（如 "上午 9-10点"）
+          price: this.getPrice(this.doctor.status, timeSlot) // 挂号价格
+        }
+      };
+    },
     getDoctorTitle(status) {
       switch (status) {
         case 1:
@@ -82,19 +108,20 @@ export default {
       const day = String(today.getDate()).padStart(2, '0');
       return [`${year}-${month}-${day}`];
     },
-    getPrice(status, time) {
-      // 这里可以根据职称和上下午设置不同的价格
+    getPrice(status, timeSlot) {
+      // 这里可以根据职称和时间段设置不同的价格
+      const isMorning = timeSlot.includes('上午');
       switch (status) {
         case 1:
-          return time === '上午' ? 50 : 40;
+          return isMorning ? 50 : 40;
         case 2:
-          return time === '上午' ? 80 : 70;
+          return isMorning ? 80 : 70;
         case 3:
-          return time === '上午' ? 100 : 90;
+          return isMorning ? 100 : 90;
         case 4:
-          return time === '上午' ? 150 : 120;
+          return isMorning ? 150 : 120;
         case 5:
-          return time === '上午' ? 60 : 50;
+          return isMorning ? 60 : 50;
         default:
           return 0;
       }
@@ -117,5 +144,20 @@ export default {
 .registration-info {
   height: 70%;
   padding-top: 20px;
+}
+
+.registration-link {
+  display: block;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.registration-link:hover {
+  background-color: #f0f0f0;
 }
 </style>

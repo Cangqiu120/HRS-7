@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.RegisterMapper">
+
+    <sql id="Base_Column_List">
+        id, hospital_id, department_id, doctor_id, user_id,time
+    </sql>
+    <select id="selectOrderDetail" resultType="com.example.entity.RegistrationDetail">
+        SELECT
+            r.`order`,
+            h.`name` AS hospitalName,
+            dpt.`name` AS departmentName,
+            doc.`name` AS doctorName,
+            r.order_time,
+            r.register_time,
+            r.price,
+            u.`name` AS userName,
+            u.phone AS userPhone,
+            u.gender AS userGender
+        FROM
+            `cq-hospital`.register r
+                JOIN
+            `cq-hospital`.hospital h ON r.hospital_id = h.id
+                JOIN
+            `cq-hospital`.department dpt ON r.department_id = dpt.id
+                JOIN
+            `cq-hospital`.doctor doc ON r.doctor_id = doc.id
+                JOIN
+            `cq-hospital`.user u ON r.user_id = u.id
+        WHERE
+            r.`order` = #{order};
+    </select>
+
+</mapper>

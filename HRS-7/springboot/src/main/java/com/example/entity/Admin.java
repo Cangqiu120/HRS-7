@@ -33,5 +33,6 @@ public class Admin extends Account implements Serializable {
     private String avatar;
     /** 角色标识 */
     private String role;
+    private String gender;
 
 }

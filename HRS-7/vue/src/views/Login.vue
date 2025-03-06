@@ -2,7 +2,7 @@
   <div class="container">
     <div style="height: 60px; position: fixed; top: 0; display: flex;justify-items: center;padding-left: 20px">
       <img src="@/assets/imgs/logo.png" alt="" style="width: 50px">
-      <span style="color: #409EFF; font-size: 24px;font-weight: bold;margin-left: 5px">个人网盘系统</span>
+      <span style="color: #409EFF; font-size: 24px;font-weight: bold;margin-left: 5px">医院挂号系统</span>
     </div>
     <div style="flex: 1;display: flex;justify-content: center">
       <img src="@/assets/imgs/bg.png" alt="" style="width: 80%">
@@ -95,6 +95,8 @@ export default {
           setTimeout(() => {
             if (res.data.role === "ADMIN") {
               //this.$router.push('/')  // 跳转后台
+              console.log('跳转后台')
+              console.log(res.data.token)
               location.href = '/home'
             } else {
               //this.$router.push(('/front/home'))//路由跳转主页
