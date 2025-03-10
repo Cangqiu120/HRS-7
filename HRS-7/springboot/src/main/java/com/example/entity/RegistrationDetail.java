@@ -18,4 +18,5 @@ public class RegistrationDetail {
     private String userName;
     private String userPhone;
     private String userGender;
+    private Integer status;
 }

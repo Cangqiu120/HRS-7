@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.StockMapper">
+
+    <sql id="Base_Column_List">
+
+    </sql>
+    <select id="selectByDocId" resultType="com.example.entity.Stock">
+        SELECT s.id,
+               s.hospital_id,
+               s.department_id,
+               s.stock,
+               s.`name`,
+               s.price,
+               s.manufacturer,
+               s.sell_by,
+               s.supplier_id,
+               s.type,
+               s.status
+        FROM `cq-hospital`.`stock` s
+                 JOIN `cq-hospital`.hospital h ON s.hospital_id = h.id
+                 JOIN `cq-hospital`.department dpt ON s.department_id = dpt.id
+                 JOIN `cq-hospital`.doctor doc ON doc.hospital_id = h.id
+                 JOIN `cq-hospital`.user u ON doc.user_id = u.id
+        WHERE doc.user_id = #{doctorId}
+    </select>
+
+
+</mapper>

@@ -46,6 +46,7 @@ public class RegisterService {
         String RegisterTime = date + " " + time;
         register.setRegisterTime(RegisterTime);
         register.setPrice(price);
+        register.setStatus(0);
         registerMapper.insert(register);
         return register;
     }
@@ -74,4 +75,5 @@ public class RegisterService {
         registrationDetail = registerMapper.selectOrderDetail(order);
         return registrationDetail;
     }
+
 }

@@ -41,6 +41,7 @@
             <el-select style="width: 100%" size="medium" v-model="form.role">
               <el-option value="ADMIN" label="管理员"></el-option>
               <el-option value="USER" label="用户"></el-option>
+              <el-option value="DOCTOR" label="医生"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -98,9 +99,13 @@ export default {
               console.log('跳转后台')
               console.log(res.data.token)
               location.href = '/home'
-            } else {
+            } else if(res.data.role === "USER"){
               //this.$router.push(('/front/home'))//路由跳转主页
               location.href = '/home' //本地跳转
+            }else if(res.data.role === "DOCTOR"){
+              console.log(res.data.token)
+              //location.href = '/doctor/home'
+              location.href = '/doctor'
             }
           })
 

@@ -1,5 +1,6 @@
 package com.example.mapper;
 
+import com.example.entity.RegistrationDetail;
 import com.example.entity.User;
 import org.apache.ibatis.annotations.Select;
 
@@ -37,4 +38,6 @@ public interface UserMapper {
 
     @Select("select * from `cq-hospital`.user where username = #{username}")
     User selectByUsername(String username);
+
+    List<RegistrationDetail> selectRegistrations(Integer userId);
 }

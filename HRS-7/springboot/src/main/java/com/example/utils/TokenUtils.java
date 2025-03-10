@@ -8,6 +8,7 @@ import com.example.common.Constants;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.service.AdminService;
+import com.example.service.DoctorService;
 import com.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +31,22 @@ public class TokenUtils {
 
     private static AdminService staticAdminService;
     private static UserService staticUserService;
+    private static DoctorService staticDoctorService;
 
     @Resource
     AdminService adminService;
     @Resource
     UserService userService;
+    @Resource
+    DoctorService doctorService;
+    /**
+     * 解决service为null的问题
+     */
     @PostConstruct
     public void setUserService() {
         staticAdminService = adminService;
         staticUserService = userService;
+        staticDoctorService = doctorService;
     }
 
     /**
@@ -65,6 +73,8 @@ public class TokenUtils {
                     return staticAdminService.selectById(Integer.valueOf(userId));
                 } else if (RoleEnum.USER.name().equals(role)) {
                     return staticUserService.selectById(Integer.valueOf(userId));
+                } else if (RoleEnum.DOCTOR.name().equals(role)) {
+                    return staticDoctorService.selectById(Integer.valueOf(userId));
                 }
             }
         } catch (Exception e) {

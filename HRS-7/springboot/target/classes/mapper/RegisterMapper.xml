@@ -18,7 +18,8 @@
             r.price,
             u.`name` AS userName,
             u.phone AS userPhone,
-            u.gender AS userGender
+            u.gender AS userGender,
+            r.status
         FROM
             `cq-hospital`.register r
                 JOIN
@@ -32,5 +33,6 @@
         WHERE
             r.`order` = #{order};
     </select>
+
 
 </mapper>

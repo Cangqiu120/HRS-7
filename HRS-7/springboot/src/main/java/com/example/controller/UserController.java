@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.common.Result;
+import com.example.entity.RegistrationDetail;
 import com.example.entity.User;
 import com.example.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -84,4 +85,11 @@ public class UserController {
         return Result.success(page);
     }
 
+    @GetMapping("/selectRegistrations")
+    public Result selectRegistrations(@RequestParam(defaultValue = "1") Integer pageNum,
+                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                                     @RequestParam Integer userId){
+        PageInfo<RegistrationDetail> page = userService.selectRegistrationsPage(pageNum, pageSize,userId);
+        return Result.success(page);
+    }
 }

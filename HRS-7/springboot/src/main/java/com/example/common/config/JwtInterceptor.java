@@ -11,6 +11,7 @@ import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.exception.CustomException;
 import com.example.service.AdminService;
+import com.example.service.DoctorService;
 import com.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.annotation.Resource;
+import javax.management.relation.Role;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,6 +35,8 @@ public class JwtInterceptor implements HandlerInterceptor {
     private AdminService adminService;
     @Resource
     private UserService userService;
+    @Resource
+    private DoctorService doctorService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -61,6 +65,8 @@ public class JwtInterceptor implements HandlerInterceptor {
                 account = adminService.selectById(Integer.valueOf(userId));
             } else if (RoleEnum.USER.name().equals(role)) {
                 account = userService.selectById(Integer.valueOf(userId));
+            } else if (RoleEnum.DOCTOR.name().equals(role)) {
+                account = doctorService.selectById(Integer.valueOf(userId));
             }
         } catch (Exception e) {
             log.error("Token 解析失败: {}", e.getMessage());

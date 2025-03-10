@@ -7,6 +7,7 @@ import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.service.AdminService;
+import com.example.service.DoctorService;
 import com.example.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,8 @@ public class WebController {
     private AdminService adminService;
     @Resource
     private UserService userService;
+    @Resource
+    private DoctorService doctorService;
 
     @GetMapping("/")
     public Result hello() {
@@ -41,7 +44,9 @@ public class WebController {
             account = adminService.login(account);
         }else if (RoleEnum.USER.name().equals(account.getRole())){
             account = userService.login(account);
-        }else{
+        } else if (RoleEnum.DOCTOR.name().equals(account.getRole())) {
+            account = doctorService.login(account);
+        } else{
             return Result.error(ResultCodeEnum.PARAM_ERROR);
         }
         return Result.success(account);

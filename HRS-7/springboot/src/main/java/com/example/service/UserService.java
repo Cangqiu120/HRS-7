@@ -5,6 +5,8 @@ import com.example.common.Constants;
 import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
+import com.example.entity.Doctor;
+import com.example.entity.RegistrationDetail;
 import com.example.entity.User;
 import com.example.exception.CustomException;
 import com.example.mapper.UserMapper;
@@ -15,6 +17,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -25,6 +29,9 @@ public class UserService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private DoctorService doctorService;
 
     /**
      * 新增
@@ -132,4 +139,9 @@ public class UserService {
         userMapper.updateById(dbUser);
     }
 
+    public PageInfo<RegistrationDetail> selectRegistrationsPage(Integer pageNum, Integer pageSize, Integer userId) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<RegistrationDetail> registrationDetails = userMapper.selectRegistrations(userId);
+        return PageInfo.of(registrationDetails);
+    }
 }
