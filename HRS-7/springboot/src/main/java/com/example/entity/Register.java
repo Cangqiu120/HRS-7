@@ -20,5 +20,6 @@ public class Register {
     private String orderTime;
     private String registerTime;
     private int price;
+    private String shiftType;
     private int status;
 }

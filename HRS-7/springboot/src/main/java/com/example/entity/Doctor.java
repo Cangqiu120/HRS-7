@@ -25,4 +25,5 @@ public class Doctor {
     private Integer userId;
     //简介
     private String introduction;
+    private String appealedNumber;
 }

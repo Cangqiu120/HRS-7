@@ -29,21 +29,15 @@
           录
         </div>
         <el-form :model="form" :rules="rules" ref="formRef">
-          <el-form-item prop="username">
+          <el-form-item prop="account">
             <el-input size="medium" prefix-icon="el-icon-user" placeholder="请输入账号"
-                      v-model="form.username"></el-input>
+                      v-model="form.account"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input size="medium" prefix-icon="el-icon-lock" placeholder="请输入密码" show-password
                       v-model="form.password"></el-input>
           </el-form-item>
-          <el-form-item prop="role">
-            <el-select style="width: 100%" size="medium" v-model="form.role">
-              <el-option value="ADMIN" label="管理员"></el-option>
-              <el-option value="USER" label="用户"></el-option>
-              <el-option value="DOCTOR" label="医生"></el-option>
-            </el-select>
-          </el-form-item>
+
           <el-form-item>
             <el-button size="medium" style="width: 100%; background-color: #2a60c9; border-color: #2a60c9; color: white"
                        @click="login">登 录
@@ -66,9 +60,9 @@ export default {
   name: "Login",
   data() {
     return {
-      form: {role: 'ADMIN'},
+      form: {},
       rules: {
-        username: [
+        account: [
           {required: true, message: '请输入账号', trigger: 'blur'},
         ],
         password: [
@@ -98,8 +92,11 @@ export default {
               //this.$router.push('/')  // 跳转后台
               console.log('跳转后台')
               console.log(res.data.token)
-              location.href = '/home'
-            } else if(res.data.role === "USER"){
+              location.href = '/topAdmin'
+            }
+            else if(res.data.role === "HospitalADMIN"){
+              location.href = '/hospitalAdmin' //本地跳转
+            }else if(res.data.role === "USER"){
               //this.$router.push(('/front/home'))//路由跳转主页
               location.href = '/home' //本地跳转
             }else if(res.data.role === "DOCTOR"){

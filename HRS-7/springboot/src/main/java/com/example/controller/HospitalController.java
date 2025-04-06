@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.common.Result;
 import com.example.common.enums.ResultCodeEnum;
+import com.example.entity.Department;
 import com.example.entity.Hospital;
 import com.example.service.HospitalService;
 import com.github.pagehelper.PageInfo;
@@ -33,5 +34,22 @@ public class HospitalController {
                              @RequestParam(defaultValue = "10") Integer pageSize) {
         PageInfo<Hospital> page = hospitalService.selectPage(hospital, pageNum, pageSize);
         return Result.success(page);
+    }
+    @GetMapping("/departmentList")
+    public Result departmentList(@RequestParam Integer userId) {
+        List<Department> departments = hospitalService.departmentList(userId);
+        return Result.success(departments);
+    }
+
+    @GetMapping("/selectById/{hospitalId}")
+    public Result selectById(@PathVariable Integer hospitalId) {
+        Hospital hospital = hospitalService.selectById(hospitalId);
+        return Result.success(hospital.getName());
+    }
+
+    @GetMapping("/selectDepById/{departmentId}")
+    public Result selectDepById(@PathVariable Integer departmentId) {
+        Hospital hospital = hospitalService.selectDepById(departmentId);
+        return Result.success(hospital.getName());
     }
 }

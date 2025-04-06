@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ScheduleMapper">
+
+
+    <select id="getScheduleByDoctorName" resultType="com.example.entity.Schedule">
+        select * from `cq-hospital`.schedule join `cq-hospital`.doctor on schedule.doctor_id = doctor.id
+                 join `cq-hospital`.hospital on schedule.hospital_id = hospital.id
+                 join `cq-hospital`.department on schedule.department_id = department.id
+                where doctor.name = #{doctorName} and schedule.schedule_date = #{scheduleDate} and hospital.name = #{hospitalName} and department.name = #{departmentName}
+    </select>
+</mapper>

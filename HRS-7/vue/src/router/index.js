@@ -23,6 +23,8 @@ const routes = [
       { path: '/submit-registration', name: 'SubmitRegistration', component: () => import('@/views/user/SubmitRegistration.vue') },
       { path: '/registration-success', name: 'RegistrationSuccess', component: () => import('@/views/user/RegistrationSuccess.vue') },
       { path: '/registration-detail', name: 'OrderDetail', component: () => import('@/views/user/RegistrationDetail.vue') },
+      {path: 'appointmentRegister',name:'AppointmentRegister',meta:{name:'预约挂号'},component:()=>import('@/views/user/AppointmentRegister.vue')},
+      {path: 'appeal',name:'Appeal',meta:{name:'申诉'},component:()=>import('@/views/user/Appeal.vue')},
       { path: '403', name: 'NoAuth', meta: { name: '无权限' }, component: () => import('@/views/user/403') },
       { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('@/views/user/Home') },
       { path: 'admin', name: 'Admin', meta: { name: '管理员信息' }, component: () => import('@/views/user/Admin') },
@@ -34,12 +36,28 @@ const routes = [
     ],
   },
   {
-    path: '/front',
-    name: 'Front',
-    component: () => import('../views/Front.vue'),
+    path: '/hospitalAdmin',
+    name: 'HospitalAdmin',
+    component: () => import('../views/HospitalAdminFront.vue'),
+    redirect: '/hospitalAdmin/home', // 重定向到主页
     children: [
-      { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('../views/front/Home') },
-      { path: 'person', name: 'Person', meta: { name: '个人信息' }, component: () => import('../views/front/Person') },
+      { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('@/views/hospitalAdmin/Home') },
+      { path: 'person', name: 'Person', meta: { name: '个人信息' }, component: () => import('@/views/hospitalAdmin/Person') },
+      {path: 'patientAppealList', name: "PatientAppealList", meta: { name: '患者申诉列表' }, component: () => import('@/views/hospitalAdmin/PatientAppealList') },
+      {path: 'appealDetail', name: "AppealDetail", meta: { name: '患者申诉详情' }, component: () => import('@/views/hospitalAdmin/AppealDetail') },
+      {path: '/hospitalAdmin/warehouse-management', name: 'WarehouseManagement', meta: { name: '仓库管理' }, component: () => import('@/views/hospitalAdmin/WarehouseManagement') },
+      {path: 'purchase', name: 'Purchase' , meta: {name: '进货'},component: () => import('@/views/hospitalAdmin/Purchase.vue')},
+      {path: 'scheduling', name: 'Scheduling', meta: {name: '排班'},component: () => import('@/views/hospitalAdmin/Scheduling.vue')},
+    ],
+  },
+  {
+    path: '/topAdmin',
+    name: 'TopAdmin',
+    component: () => import('../views/TopAdminFront.vue'),
+    redirect: '/topAdmin/home', // 重定向到主页
+    children: [
+      { path: 'home', name: 'Home', meta: { name: '系统首页' }, component: () => import('@/views/topAdmin/Home') },
+      { path: 'person', name: 'Person', meta: { name: '个人信息' }, component: () => import('@/views/topAdmin/Person') },
     ],
   },
   {

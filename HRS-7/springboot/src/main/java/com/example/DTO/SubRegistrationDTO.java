@@ -13,4 +13,6 @@ public class SubRegistrationDTO {
     private String registrationDate;
     private String registrationTimeSlot;
     private Integer registrationPrice;
+    private String shiftType;
+    private Integer status;
 }

@@ -1,6 +1,8 @@
 package com.example.mapper;
 
+import com.example.entity.Account;
 import com.example.entity.Admin;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 /**
  * 操作admin相关数据接口
 */
+@Mapper
 public interface AdminMapper {
 
     /**
@@ -37,4 +40,7 @@ public interface AdminMapper {
 
     @Select("select * from `cq-hospital`.user where username = #{username}")
     Admin selectByUsername(String username);
+
+    @Select("select * from `cq-hospital`.admin where account = #{account}")
+    Account selectByAccount(String account);
 }

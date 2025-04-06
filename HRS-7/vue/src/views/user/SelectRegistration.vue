@@ -100,7 +100,7 @@ export default {
 
     // 分页切换
     handlePageChange(newPage) {
-      this.fetchTodayAppointments(newPage);
+      this.fetchRegistrations(newPage); // 修改为调用正确的方法
     },
 
     // 查看挂号详情

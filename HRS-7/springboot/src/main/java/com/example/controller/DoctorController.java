@@ -1,6 +1,8 @@
 package com.example.controller;
 
+import com.example.DTO.AutoScheduleRequest;
 import com.example.DTO.ConsultationRecordDTO;
+
 import com.example.common.Result;
 import com.example.entity.Consultation;
 import com.example.entity.Doctor;
@@ -26,9 +28,21 @@ public class DoctorController {
         return Result.success(doctors);
     }
 
+    @GetMapping("/selectDocByAdminIdAndDepId")
+    public Result selectDocByAdminIdAndDepId(@RequestParam String userId, @RequestParam String departmentId) {
+        List<Doctor> doctors = doctorService.selectDocByAdminIdAndDepId(userId, departmentId);
+        return Result.success(doctors);
+    }
+
     @GetMapping("/selectDoctorById")
     public Result selectDoctorById(@RequestParam String doctorId) {
         Doctor doctor = doctorService.selectDoctorById(doctorId);
+        return Result.success(doctor);
+    }
+
+    @GetMapping("/selectDoctorByName")
+    public Result selectDoctorByName(@RequestParam String doctorName) {
+        Doctor doctor = doctorService.selectDoctorByName(doctorName);
         return Result.success(doctor);
     }
 
@@ -77,4 +91,11 @@ public class DoctorController {
         doctorService.submitOrder(registerId);
         return Result.success();
     }
+
+    @GetMapping("/list")
+    public Result list(@RequestParam Integer userId , @RequestParam Integer departmentId) {
+        List<Doctor> doctors = doctorService.list(userId,departmentId);
+        return Result.success(doctors);
+    }
+
 }

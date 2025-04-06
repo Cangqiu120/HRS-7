@@ -3,7 +3,7 @@
     <!-- 顶部横幅 -->
     <div class="hospital-header">
       <div class="hospital-header-left">
-        <img src="@/assets/imgs/logo.png" alt="医院 logo" />
+        <img src="@/assets/imgs/logo.png" alt="医院 logo"/>
         <div class="title">非著名的沧秋医院</div>
       </div>
       <div class="hospital-header-right">
@@ -11,7 +11,7 @@
         <template v-if="user.id">
           <!-- 登录后显示头像和下拉菜单 -->
           <el-dropdown>
-            <img :src="user.avatar" alt="用户头像" class="user-avatar" />
+            <img :src="user.avatar" alt="用户头像" class="user-avatar"/>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click.native="goToPerson">查看个人信息</el-dropdown-item>
@@ -45,7 +45,7 @@
             <i class="el-icon-medal"></i>
             <span>挂号</span>
           </template>
-          <el-menu-item index="/appointment-registration/reservation">预约挂号</el-menu-item>
+          <el-menu-item @click="goToAppointmentRegistration(1)">预约挂号</el-menu-item>
           <el-menu-item index="/Same-day-registration/reservation">当日挂号</el-menu-item>
         </el-submenu>
 
@@ -175,8 +175,25 @@ export default {
         console.error('路由跳转失败:', err); // 捕获路由跳转错误
       });
     },
-    selectRegistration(){
+    selectRegistration() {
       this.$router.push("/selectRegistration");
+    },
+    goToAppointmentRegistration(id) {
+      if (id = 1) {
+        this.$router.push({
+          path: '/Same-day-registration/reservation',
+          query: {
+            isAppointment: true
+          }
+        });
+      } else {
+        this.$router.push({
+          path: '/Same-day-registration/reservation',
+          query: {
+            isAppointment: false
+          }
+        })
+      }
     }
   },
 };

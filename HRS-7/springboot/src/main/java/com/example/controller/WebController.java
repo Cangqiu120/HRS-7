@@ -2,6 +2,7 @@ package com.example.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.example.DTO.AppealDTO;
 import com.example.common.Result;
 import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
@@ -12,6 +13,7 @@ import com.example.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.security.PublicKey;
 
 /**
  * 基础前端接口
@@ -36,18 +38,25 @@ public class WebController {
      */
     @PostMapping("/login")
     public Result login(@RequestBody Account account) {
-        if (ObjectUtil.isEmpty(account.getUsername()) || ObjectUtil.isEmpty(account.getPassword())
-                || ObjectUtil.isEmpty(account.getRole())) {
+        if (ObjectUtil.isEmpty(account.getAccount()) || ObjectUtil.isEmpty(account.getPassword())) {
             return Result.error(ResultCodeEnum.PARAM_LOST_ERROR);
         }
-        if (RoleEnum.ADMIN.name().equals(account.getRole())) {
-            account = adminService.login(account);
-        }else if (RoleEnum.USER.name().equals(account.getRole())){
-            account = userService.login(account);
-        } else if (RoleEnum.DOCTOR.name().equals(account.getRole())) {
-            account = doctorService.login(account);
-        } else{
-            return Result.error(ResultCodeEnum.PARAM_ERROR);
+        String usernamePrefix = "";
+        if (account.getAccount().length() >= 3) {
+            usernamePrefix = account.getAccount().substring(0, 3);
+        }
+        switch (usernamePrefix) {
+            case "adm":
+                account = adminService.login(account);
+                break;
+            case "doc":
+                account = doctorService.login(account);
+                break;
+            case "top":
+                account = adminService.login(account);
+                break;
+            default:
+                account = userService.login(account);
         }
         return Result.success(account);
     }

@@ -1,24 +1,50 @@
 <template>
   <div class="order-detail-page">
-    <h2>订单详情</h2>
-    <div v-if="isLoading">
-      <p>正在加载订单详情，请稍候...</p>
-    </div>
-    <div v-else-if="registrationDetail">
-      <!-- 修改为使用 registrationDetail 对象 -->
-      <p>订单编号：{{ registrationDetail.order }}</p>
-      <p>医院：{{ registrationDetail.hospitalName }}</p>
-      <p>科室：{{ registrationDetail.departmentName }}</p>
-      <p>医生姓名：{{ registrationDetail.doctorName }}</p>
-      <p>挂号时间：{{ registrationDetail.registerTime }}</p>
-      <p>订单价格：{{ registrationDetail.price }} 元</p>
-      <p>用户姓名：{{ registrationDetail.userName }}</p>
-      <p>用户性别：{{ registrationDetail.userGender }}</p>
-      <p>用户联系方式：{{ registrationDetail.userPhone }}</p>
-      <p>订单提交日期：{{ registrationDetail.orderTime }}</p>
+    <!-- 数据加载中提示 -->
+    <div v-if="isLoading" class="loading-container">
+      <el-spinner />
+      <span>正在加载订单详情，请稍候...</span>
     </div>
     <div v-else>
-      <p>获取订单详情失败，请稍后重试。</p>
+      <h2>订单详情</h2>
+      <el-form label-width="120px" v-if="registrationDetail">
+        <el-form-item label="订单编号">
+          <span>{{ registrationDetail.order }}</span>
+        </el-form-item>
+        <el-form-item label="医院">
+          <span>{{ registrationDetail.hospitalName }}</span>
+        </el-form-item>
+        <el-form-item label="科室">
+          <span>{{ registrationDetail.departmentName }}</span>
+        </el-form-item>
+        <el-form-item label="医生姓名">
+          <span>{{ registrationDetail.doctorName }}</span>
+        </el-form-item>
+        <el-form-item label="挂号时间">
+          <span>{{ registrationDetail.registerTime }}</span>
+        </el-form-item>
+        <el-form-item label="挂号班次">
+          <span>{{ registrationDetail.shiftType === 'DAY' ? '白班' : '夜班' }}</span>
+        </el-form-item>
+        <el-form-item label="订单价格">
+          <span>{{ registrationDetail.price }} 元</span>
+        </el-form-item>
+        <el-form-item label="用户姓名">
+          <span>{{ registrationDetail.userName }}</span>
+        </el-form-item>
+        <el-form-item label="用户性别">
+          <span>{{ registrationDetail.userGender }}</span>
+        </el-form-item>
+        <el-form-item label="用户联系方式">
+          <span>{{ registrationDetail.userPhone }}</span>
+        </el-form-item>
+        <el-form-item label="订单提交日期">
+          <span>{{ registrationDetail.orderTime }}</span>
+        </el-form-item>
+      </el-form>
+      <div v-else>
+        <p>获取订单详情失败，请稍后重试。</p>
+      </div>
     </div>
   </div>
 </template>
@@ -28,7 +54,6 @@ export default {
   name: 'OrderDetail',
   data() {
     return {
-      // 修改为 registrationDetail
       registrationDetail: null,
       isLoading: true
     };
@@ -51,7 +76,6 @@ export default {
       })
           .then(response => {
             if (response.data) {
-              // 修改为赋值给 registrationDetail
               this.registrationDetail = response.data;
             } else {
               this.handleError('获取订单详情失败', response.data);
@@ -75,5 +99,13 @@ export default {
 <style scoped>
 .order-detail-page {
   padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 20px;
 }
 </style>

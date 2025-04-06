@@ -24,7 +24,6 @@ export default {
     },
     goOrderDetail() {
       if (this.order) {
-        // 跳转到订单详情页，需根据实际路由配置修改路径
         this.$router.push({
           name: 'OrderDetail',
           query: {

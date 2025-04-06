@@ -12,4 +12,5 @@ public class PrescribeUserDTO {
     private String userGender;
     private String userPhone;
     private String date;
+    private String order;
 }

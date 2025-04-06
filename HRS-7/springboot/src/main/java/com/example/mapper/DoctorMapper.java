@@ -6,13 +6,10 @@ import com.example.entity.Consultation;
 import com.example.entity.Doctor;
 import com.example.entity.Register;
 import com.example.entity.RegistrationDetail;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-
+@Mapper
 public interface DoctorMapper {
 
     @Select("select * from `cq-hospital`.doctor where hospital_id = #{hid} and department_id = #{depId}")
@@ -46,7 +43,13 @@ public interface DoctorMapper {
     @Update("update `cq-hospital`.register set status = 3 where `order` = #{registerId}")
     void submitOrder(Long registerId);
 
-    List<PrescribeDetailDTO> selectPrescribe(Integer id);
+    List<PrescribeDetailDTO> selectPrescribe(Integer id,String order);
 
-    List<PrescribeUserDTO> selectRegisterByDocId(Integer id, String date);
+    List<PrescribeUserDTO> selectRegisterByDocId(Integer id);
+
+    @Select("select * from `cq-hospital`.doctor where name = #{doctorName}")
+    Doctor selectDoctorByName(String doctorName);
+
+    @Select("SELECT COUNT(*) FROM `cq-hospital`.doctor WHERE department_id = #{departmentId}")
+    int countDoctorsByDepartment(Integer departmentId);
 }

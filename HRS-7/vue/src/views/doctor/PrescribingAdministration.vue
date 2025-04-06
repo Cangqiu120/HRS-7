@@ -10,6 +10,7 @@
 
     <!-- 挂号信息表格 -->
     <el-table v-if="prescribes.length > 0" :data="prescribes" stripe>
+      <el-table-column prop="order" label="订单号" width="180"></el-table-column>
       <!-- 患者姓名 -->
       <el-table-column prop="userName" label="患者姓名" width="120"></el-table-column>
 
@@ -27,10 +28,9 @@
       <el-table-column prop="date" label="开药时间" width="180"></el-table-column>
 
       <!-- 操作 -->
-      <!-- 操作 -->
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleViewDetails()">查看详情</el-button>
+          <el-button type="primary" size="small" @click="handleViewDetails(scope.row)">查看详情</el-button>
 
         </template>
       </el-table-column>
@@ -105,9 +105,13 @@ export default {
     },
 
     // 查看开药详情
-    handleViewDetails() {
+    handleViewDetails(row) {
+      console.log(row.order);
       this.$router.push({
         name: 'PrescribeDetail',
+        params: {
+          orderId: row.order
+        }
       });
     },
 

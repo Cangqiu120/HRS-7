@@ -101,7 +101,7 @@ public class UserService {
      * 登录
      */
     public Account login(Account account) {
-        Account dbUser = userMapper.selectByUsername(account.getUsername());
+        Account dbUser = userMapper.selectByAccount(account.getAccount());
         if (ObjectUtil.isNull(dbUser)) {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }

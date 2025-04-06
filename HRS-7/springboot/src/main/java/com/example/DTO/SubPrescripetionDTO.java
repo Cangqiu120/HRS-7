@@ -14,4 +14,5 @@ public class SubPrescripetionDTO {
     public Integer hospitalId;
     public Integer departmentId;
     public String date;
+    public String order;
 }

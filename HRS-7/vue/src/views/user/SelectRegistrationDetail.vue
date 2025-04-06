@@ -17,6 +17,7 @@
         <el-descriptions-item label="医生姓名">{{ detail.doctorName }}</el-descriptions-item>
         <el-descriptions-item label="下单时间">{{ detail.orderTime }}</el-descriptions-item>
         <el-descriptions-item label="预约时间">{{ detail.registerTime }}</el-descriptions-item>
+        <el-descriptions-item label="挂号班次">{{ detail.shiftType === 'DAY' ? '白班' : '夜班' }}</el-descriptions-item>
         <el-descriptions-item label="费用">{{ detail.price }} 元</el-descriptions-item>
         <el-descriptions-item label="患者姓名">{{ detail.userName }}</el-descriptions-item>
         <el-descriptions-item label="患者性别">{{ detail.userGender }}</el-descriptions-item>
@@ -30,12 +31,15 @@
       <el-button type="primary" @click="handleBack">返回</el-button>
       <!-- 添加申诉按钮，当 status 为 3 时显示 -->
       <el-button v-if="detail && detail.status === 3" type="warning" @click="handleAppeal">申诉</el-button>
-      <el-button v-if="detail && detail.status === 3" type="success" @click="handleReferral">复诊</el-button>
+      <el-button v-if="detail && detail.status === 3" type="success" @click="handleReferralConfirm1">当日复诊</el-button>
+      <el-button v-if="detail && detail.status === 3" type="success" @click="handleReferralConfirm2">预约复诊</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import {parseTime} from "@/utils";
+
 export default {
   name: 'SelectRegistrationDetail',
   data() {
@@ -110,17 +114,81 @@ export default {
     // 申诉按钮点击事件处理函数
     handleAppeal() {
       console.log('点击了申诉按钮');
+      this.$confirm('确定选择申诉吗', '申诉', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+          .then(() => {
+            this.$router.push({
+              name: 'Appeal',
+              query: {
+                orderId: this.detail.order
+              }
+            })
+          })
+          .catch(() => {
+          });
     },
 
-    handleReferral(){
-      console.log('点击了复诊按钮');
+    // 当日复诊确认
+    handleReferralConfirm1() {
+      console.log('点击了当日复诊确认按钮');
+      this.$confirm('确定选择当日复诊吗', '当日复诊', {
+        confirmButtonText: '当日复诊',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+          .then(() => {
+            // 点击确定，执行当日复诊逻辑
+            this.handleImmediateReferral();
+          })
+          .catch(() => {
+          });
+    },
+
+    // 预约复诊确认
+    handleReferralConfirm2() {
+      console.log('点击了预约复诊确认按钮');
+      this.$confirm('确定选择预约复诊吗', '预约复诊', {
+        confirmButtonText: '预约复诊',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+          .then(() => {
+            // 点击确定，执行当日复诊逻辑
+            this.handleScheduledReferral();
+          })
+          .catch(() => {
+          });
+    },
+
+    // 当日复诊逻辑
+    handleImmediateReferral() {
+      console.log('点击了当日复诊按钮');
       this.$router.push({
         name: 'Registration',
         query: {
           doctorName: this.detail.doctorName,
-          nowUserName: this.detail.userName,
-          nowUserPhone: this.detail.userPhone,
-          isRevisit: true // 标识这是复诊操作
+          hospitalName: this.detail.hospitalName,
+          departmentName: this.detail.departmentName,
+          isRevisit: true,
+          isImmediate: true, // 标识这是当日复诊操作
+          status: 5
+        }
+      });
+    },
+
+    // 预约复诊逻辑
+    handleScheduledReferral() {
+      console.log('点击了预约复诊按钮');
+      this.$router.push({
+        name: 'Registration',
+        query: {
+          doctorName: this.detail.doctorName,
+          isRevisit: true,
+          isImmediate: false,
+          status: 5
         }
       });
     }

@@ -7,6 +7,11 @@
     <sql id="Base_Column_List">
 
     </sql>
+    <insert id="purchase">
+INSERT INTO `cq-hospital`.purchase_report (name, quantity, supplier_address, supplier_leader, supplier_name, supplier_phone, supplier_price, date, total_price) VALUES (#{name}, #{quantity}, #{supplierAddress}, #{supplierLeader}, #{supplierName}, #{supplierPhone}, #{supplierPrice}, #{date}, #{totalPrice})
+    </insert>
+    <insert id="insert" parameterType="com.example.entity.Stock">
+    </insert>
     <select id="selectByDocId" resultType="com.example.entity.Stock">
         SELECT s.id,
                s.hospital_id,
@@ -25,6 +30,36 @@
                  JOIN `cq-hospital`.doctor doc ON doc.hospital_id = h.id
                  JOIN `cq-hospital`.user u ON doc.user_id = u.id
         WHERE doc.user_id = #{doctorId}
+    </select>
+    <select id="selectStockByType" resultType="com.example.DTO.StockDTO">
+        SELECT s.id,
+               s.name,
+               s.stock,
+               dpt.name AS department,
+               s.manufacturer,
+               s.sell_by,
+               su.name  AS supplier,
+               s.price,
+               s.status
+        FROM `cq-hospital`.`stock` s
+                 JOIN `cq-hospital`.department dpt ON s.department_id = dpt.id
+                 JOIN `cq-hospital`.purchase p ON p.stock_id = s.id
+                 JOIN `cq-hospital`.supplier su ON su.id = p.supplier_id
+                 JOIN `cq-hospital`.hospital h ON h.id = s.hospital_id
+                 JOIN `cq-hospital`.admin ad ON ad.hospital_id = h.id
+        WHERE s.type = #{type}
+          AND ad.id = #{hospitalAdminId}
+    </select>
+    <select id="selectSupplier" resultType="com.example.entity.Supplier">
+        SELECT su.name,
+               ss.price,
+               su.address,
+               su.phone,
+               su.leader
+        FROM `cq-hospital`.stock s
+                 JOIN `cq-hospital`.supply_stock ss ON ss.med_name = s.name
+                 JOIN `cq-hospital`.supplier su ON su.id = ss.supplier
+        WHERE s.name = #{name}
     </select>
 
 

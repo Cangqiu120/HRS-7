@@ -2,15 +2,38 @@
   <div>
     <!-- 搜索框 -->
     <div class="search-container">
-      <el-input v-model="searchKeyword" placeholder="请输入医院名称" @keyup.enter="fetchHospitalList(1)"></el-input>
-      <el-button @click="fetchHospitalList(1)">搜索</el-button>
+      <el-input
+          v-model="searchKeyword"
+          placeholder="请输入医院名称"
+          @keyup.enter="fetchHospitalList(1)"
+          class="search-input"
+      />
+      <el-button
+          @click="fetchHospitalList(1)"
+          class="search-button"
+          icon="el-icon-search"
+      >
+        搜索
+      </el-button>
+    </div>
+
+    <!-- 数据加载中提示 -->
+    <div v-if="isLoading" class="loading-container">
+      <el-spinner />
+      <span>正在加载数据...</span>
     </div>
 
     <!-- 医院列表 -->
-    <el-table :data="hospitalList" stripe>
+    <el-table :data="hospitalList" stripe class="hospital-table">
       <el-table-column prop="name" label="医院名称">
         <template slot-scope="scope">
-          <el-link type="primary" @click="goToHospitalDetail(scope.row.id)">{{ scope.row.name }}</el-link>
+          <el-link
+              type="primary"
+              @click="goToHospitalDetail(scope.row.id)"
+              class="hospital-link"
+          >
+            {{ scope.row.name }}
+          </el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -23,7 +46,8 @@
         :page-size="pageSize"
         :total="totalHospitals"
         @current-change="handlePageChange"
-    ></el-pagination>
+        class="pagination-container"
+    />
   </div>
 </template>
 
@@ -39,7 +63,9 @@ export default {
       hospitalList: [], // 医院列表
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示条数
-      totalHospitals: 0 // 总条数
+      totalHospitals: 0, // 总条数
+      isAppointment: this.$route.query.isAppointment,
+      isLoading: false, // 数据加载状态
     };
   },
   created() {
@@ -48,15 +74,16 @@ export default {
   methods: {
     // 获取医院列表
     fetchHospitalList(pageNumber) {
+      this.isLoading = true;
       this.currentPage = pageNumber;
       this.$request.get('/hospital/selectPage', {
         params: {
           pageNum: this.currentPage,
           pageSize: this.pageSize,
-          name: this.searchKeyword
-        }
+          name: this.searchKeyword,
+        },
       })
-          .then(response => {
+          .then((response) => {
             if (response.data && response.data.list) {
               this.hospitalList = response.data.list;
             }
@@ -64,9 +91,12 @@ export default {
               this.totalHospitals = response.data.total;
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('获取医院列表失败:', error);
             this.$message.error('获取医院列表失败，请稍后重试');
+          })
+          .finally(() => {
+            this.isLoading = false;
           });
     },
     // 重置搜索
@@ -80,14 +110,54 @@ export default {
     },
     // 跳转到医院详情页面
     goToHospitalDetail(hospitalId) {
-      this.$router.push(`/appointment-registration/hospital/${hospitalId}`);
-    }
-  }
+      const isAppointment = this.$route.query.isAppointment;
+      this.$router.push({
+        path: `/appointment-registration/hospital/${hospitalId}`,
+        query: {
+          isAppointment: isAppointment,
+        },
+      });
+    },
+  },
 };
 </script>
 
 <style scoped>
 .search-container {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.search-button {
+  background-color: #409eff;
+  color: white;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.hospital-table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.hospital-link {
+  cursor: pointer;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

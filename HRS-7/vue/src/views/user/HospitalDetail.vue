@@ -1,21 +1,38 @@
 <template>
-  <div class="hospital-detail">
-    <div v-if="isLoading" class="loading-text">加载中，请稍候...</div>
+  <div class="hospital-detail-form">
+    <!-- 数据加载中提示 -->
+    <div v-if="isLoading" class="loading-container">
+      <el-spinner />
+      <span>正在加载数据...</span>
+    </div>
     <div v-else>
-      <h1>{{ hospital.name }}</h1>
-      <p><strong>医院地址:</strong> {{ hospital.address }}</p>
-      <p><strong>联系电话:</strong> {{ hospital.phone }}</p>
-      <p><strong>医院等级:</strong> {{ getHospitalLevel(hospital.level) }}</p>
-      <p><strong>医院简介:</strong> {{ hospital.introduction }}</p>
-      <p v-if="hospital.departments && hospital.departments.length > 0"><strong>科室列表:</strong></p>
-      <ul v-if="hospital.departments">
-        <li v-for="(department, index) in hospital.departments" :key="index">
-          <!-- 使用 router-link 跳转到医生页面 -->
-          <router-link :to="getDoctorRoute(department.id)">
-            {{ department.name}}
-          </router-link>
-        </li>
-      </ul>
+      <el-form label-width="120px">
+        <el-form-item label="医院名称">
+          <span>{{ hospital.name }}</span>
+        </el-form-item>
+        <el-form-item label="医院地址">
+          <span>{{ hospital.address }}</span>
+        </el-form-item>
+        <el-form-item label="联系电话">
+          <span>{{ hospital.phone }}</span>
+        </el-form-item>
+        <el-form-item label="医院等级">
+          <span>{{ getHospitalLevel(hospital.level) }}</span>
+        </el-form-item>
+        <el-form-item label="医院简介">
+          <span>{{ hospital.introduction }}</span>
+        </el-form-item>
+        <el-form-item label="科室列表">
+          <ul class="department-list">
+            <li v-for="(department, index) in hospital.departments" :key="index">
+              <!-- 使用 router-link 跳转到医生页面 -->
+              <router-link :to="getDoctorRoute(department.id)" class="department-link">
+                {{ department.name}}
+              </router-link>
+            </li>
+          </ul>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
@@ -34,7 +51,8 @@ export default {
         phone: '',
         level: '',
         introduction: '',
-        departments: [] // 假设 departments 是一个数组，包含 id 和 name 字段
+        departments: [],
+        isAppointment: this.$route.query.isAppointment,
       },
       isLoading: true
     };
@@ -80,26 +98,56 @@ export default {
     // 生成跳转到医生页面的路由
     getDoctorRoute(departmentId) {
       const hospitalId = this.$route.params.id; // 获取当前医院 ID
-      return {
-        name: 'Doctor', // 路由名称
-        params: {
-          hospitalId: hospitalId, // 传递医院 ID
-          departmentId: departmentId // 传递科室 ID
+      const isAppointment = this.$route.query.isAppointment;
+      console.log(isAppointment)
+      if(isAppointment){
+        return {
+          name:'AppointmentRegister',
+          params:{
+            hospitalId: hospitalId,
+            departmentId: departmentId,
+          },
         }
-      };
+      }else{
+        return {
+          name: 'Doctor', // 路由名称
+          params: {
+            hospitalId: hospitalId, // 传递医院 ID
+            departmentId: departmentId, // 传递科室 ID
+          }
+        };
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-.hospital-detail {
+.hospital-detail-form {
   padding: 20px;
 }
 
-.loading-text {
-  text-align: center;
-  font-size: 16px;
-  color: #666;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.department-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.department-link {
+  cursor: pointer;
+  color: #409eff;
+  text-decoration: none;
+}
+
+.department-link:hover {
+  text-decoration: underline;
 }
 </style>

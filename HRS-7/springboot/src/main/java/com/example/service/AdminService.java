@@ -94,7 +94,7 @@ public class AdminService {
      * 登录
      */
     public Account login(Account account) {
-        Account dbAdmin = adminMapper.selectByUsername(account.getUsername());
+        Account dbAdmin = adminMapper.selectByAccount(account.getAccount());
         if (ObjectUtil.isNull(dbAdmin)) {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }
@@ -102,7 +102,12 @@ public class AdminService {
             throw new CustomException(ResultCodeEnum.USER_ACCOUNT_ERROR);
         }
         // 生成token
-        String tokenData = dbAdmin.getId() + "-" + RoleEnum.ADMIN.name();
+        String tokenData = null;
+        if(dbAdmin.getRole().equals(RoleEnum.HospitalADMIN.name())){
+            tokenData = dbAdmin.getId() + "-" + RoleEnum.HospitalADMIN.name();
+        }else if(dbAdmin.getRole().equals(RoleEnum.ADMIN.name())){
+            tokenData = dbAdmin.getId() + "-" + RoleEnum.ADMIN.name();
+        }
         String token = TokenUtils.createToken(tokenData, dbAdmin.getPassword());
         dbAdmin.setToken(token);
         return dbAdmin;

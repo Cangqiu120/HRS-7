@@ -69,7 +69,7 @@ public class TokenUtils {
                 String userRole = JWT.decode(token).getAudience().get(0);
                 String userId = userRole.split("-")[0];  // 获取用户id
                 String role = userRole.split("-")[1];    // 获取角色
-                if (RoleEnum.ADMIN.name().equals(role)) {
+                if (RoleEnum.ADMIN.name().equals(role) || RoleEnum.HospitalADMIN.name().equals(role)) {
                     return staticAdminService.selectById(Integer.valueOf(userId));
                 } else if (RoleEnum.USER.name().equals(role)) {
                     return staticUserService.selectById(Integer.valueOf(userId));

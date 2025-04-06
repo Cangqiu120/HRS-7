@@ -72,9 +72,10 @@ export default {
     fetchPrescriptions() {
       this.loading = true;
       this.error = '';
-      const userId = this.user.id; // 假设从路由参数中获取用户 ID
+      const userId = this.user.id;
+      console.log(this.$route.params.orderId);
       this.$request.get('/prescribe/selectPrescribeDetail', {
-        params: { userId }
+        params: { userId,orderId: this.$route.params.orderId }
       })
           .then(response => {
             if (response.data) {
@@ -115,6 +116,8 @@ export default {
           return '已完成';
         case 3:
           return '已完成';
+        case 5:
+          return '复诊中';
         default:
           return '未知状态';
       }

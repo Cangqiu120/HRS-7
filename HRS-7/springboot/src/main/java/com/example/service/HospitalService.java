@@ -27,4 +27,22 @@ public class HospitalService {
         hospital.setDepartments(Departments.toArray(new Department[0]));
         return hospital;
     }
+
+    public List<Department> departmentList(Integer id) {
+        Integer hospitalId = hospitalMapper.getHospitalById(id);
+        List<Department> departments = hospitalMapper.selectAllDepartments(hospitalId);
+        return departments;
+    }
+
+    public Integer getHospitalById(Integer userId) {
+        return hospitalMapper.getHospitalById(userId);
+    }
+
+    public Hospital selectById(Integer hospitalId) {
+        return hospitalMapper.selectById(hospitalId);
+    }
+
+    public Hospital selectDepById(Integer departmentId) {
+        return hospitalMapper.selectDepById(departmentId);
+    }
 }

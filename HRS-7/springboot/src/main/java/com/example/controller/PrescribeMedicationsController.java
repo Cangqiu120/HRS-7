@@ -32,8 +32,8 @@ public class PrescribeMedicationsController {
     }
 
     @GetMapping("/selectPrescribeDetail")
-    public Result selectPrescribeDetail(@RequestParam Integer userId){
-        List<PrescribeDetailDTO> prescribeDetailDTOS = prescribeMedicationsService.selectPrescribe(userId);
+    public Result selectPrescribeDetail(@RequestParam Integer userId,@RequestParam String orderId){
+        List<PrescribeDetailDTO> prescribeDetailDTOS = prescribeMedicationsService.selectPrescribe(userId , orderId);
         return Result.success(prescribeDetailDTOS);
     }
 

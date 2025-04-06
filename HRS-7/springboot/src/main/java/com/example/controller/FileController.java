@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.List;
+import com.example.service.FilesService;
 
 /**
  * 文件接口
@@ -29,11 +30,15 @@ public class FileController {
     @Value("${ip:localhost}")
     private String ip;
 
+    @Resource
+    private FilesService filesService;
+
     /**
      * 文件上传
      */
     @PostMapping("/upload")
     public Result upload(MultipartFile file) {
+        System.out.println(11111111);
         String flag;
         synchronized (FileController.class) {
             flag = System.currentTimeMillis() + "";
@@ -53,6 +58,12 @@ public class FileController {
         }
         String http = "http://" + ip + ":" + port + "/files/";
         return Result.success(http + flag + "-" + fileName);  //  http://localhost:9090/files/1697438073596-avatar.png
+    }
+
+    @GetMapping("/preview/{fileName}")
+    public Result preview(@PathVariable String fileName, HttpServletResponse response) {
+        filesService.preview(fileName, response);
+        return Result.success();
     }
 
 
@@ -89,6 +100,12 @@ public class FileController {
     public void delFile(@PathVariable String flag) {
         FileUtil.del(filePath + flag);
         System.out.println("删除文件" + flag + "成功");
+    }
+
+    @PostMapping("/add")
+    public Result add(MultipartFile file, String name) {
+        filesService.add(file, name);
+        return Result.success();
     }
 
 

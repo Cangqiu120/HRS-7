@@ -51,14 +51,14 @@
             u.name = #{userName}
     </select>
     <select id="selectPrescribe" resultType="com.example.DTO.PrescribeDetailDTO">
-        SELECT
+        SELECT DISTINCT
             r.`order`,
             h.`name` AS hospitalName,
             dpt.`name` AS departmentName,
             doc.`name` AS doctorName,
             p.date,
             m.number * s.price AS price ,
-            r.id AS pmId,
+            p.id AS pmId,
             u.`name` AS userName,
             u.phone AS userPhone,
             u.gender AS userGender,
@@ -77,27 +77,29 @@
                 JOIN
             `cq-hospital`.user u ON r.user_id = u.id
                 JOIN
-            `cq-hospital`.prescribe_medications p ON p.doctor_id = doc.id
-        JOIN
+            `cq-hospital`.prescribe_medications p ON p.`order` = r.`order`
+                JOIN
             `cq-hospital`.medication_mid m ON m.pm_id = p.id
-        JOIN
-            `cq-hospital`.stock s ON S.name = m.medication
+                JOIN
+            `cq-hospital`.stock s ON s.name = m.medication
         WHERE
-            r.`doctor_id` = #{id}
-          AND r.status = 2 || r.status = 3;
+            r.`doctor_id` = #{id}  AND r.`order` = #{order}
+          AND (r.status = 2 OR r.status = 3);
     </select>
     <select id="selectRegisterByDocId" resultType="com.example.DTO.PrescribeUserDTO">
         SELECT
             u.name AS userName,
             u.gender AS userGender,
             u.phone AS userPhone,
-            p.date
-            FROM
+            p.date,
+            r.`order`
+        FROM
             `cq-hospital`.prescribe_medications p
-        JOIN `cq-hospital`.user u ON p.patient_id = u.id
-        WHERE
-            u.id = #{id}
-         AND DATE(p.date) = #{date}
+                JOIN
+            `cq-hospital`.register r ON p.`order` = r.`order` AND p.patient_id = r.user_id
+                JOIN
+            `cq-hospital`.user u ON u.id = r.user_id
+        WHERE p.doctor_id = #{id} AND r.status = 2 OR r.status = 3;
     </select>
 
 </mapper>

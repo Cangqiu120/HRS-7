@@ -14,6 +14,7 @@ public class RegistrationDetail {
     private String doctorName;
     private String orderTime;
     private String registerTime;
+    private String shiftType;
     private int price;
     private String userName;
     private String userPhone;

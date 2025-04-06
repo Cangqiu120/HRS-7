@@ -6,19 +6,21 @@ import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.*;
 import com.example.exception.CustomException;
-import com.example.mapper.DoctorMapper;
-import com.example.mapper.RegisterMapper;
-import com.example.mapper.UserMapper;
+import com.example.mapper.*;
 import com.example.utils.TokenUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class DoctorService {
@@ -27,7 +29,13 @@ public class DoctorService {
     @Resource
     private UserMapper userMapper;
     @Resource
+    private HospitalMapper hospitalMapper;
+    @Resource
     private RegisterMapper registerMapper;
+    @Resource
+    private ScheduleMapper scheduleMapper;
+
+    private static final int MAX_DOCTORS_PER_DAY = 2;
 
     public List<Doctor> selectDocByHidAndDepId(String hid, String depId) {
         List<Doctor> doctors = doctorMapper.selectDocByHidAndDepId(hid, depId);
@@ -40,7 +48,7 @@ public class DoctorService {
     }
 
     public Account login(Account account) {
-        Account dbUser = userMapper.selectByUsername(account.getUsername());
+        Account dbUser = userMapper.selectByAccount(account.getAccount());
         if (ObjectUtil.isNull(dbUser)) {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }
@@ -93,7 +101,8 @@ public class DoctorService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         // 格式化日期时间
         String formattedDateTime = currentDateTime.format(formatter);
-        consultation.setConsultationDate(formattedDateTime);;
+        consultation.setConsultationDate(formattedDateTime);
+        ;
         consultation.setContent(content);
         doctorMapper.addConsultationRecord(consultation);
         return consultation;
@@ -113,5 +122,23 @@ public class DoctorService {
 
     public void submitOrder(Long registerId) {
         doctorMapper.submitOrder(registerId);
+    }
+
+    public Doctor selectDoctorByName(String doctorName) {
+       return doctorMapper.selectDoctorByName(doctorName);
+    }
+
+
+
+    public List<Doctor> list(Integer userId, Integer departmentId) {
+        Integer hospitalId = hospitalMapper.getHospitalById(userId);
+        List<Doctor> doctors = doctorMapper.selectDocByHidAndDepId(hospitalId.toString(),departmentId.toString());
+        return doctors;
+    }
+
+    public List<Doctor> selectDocByAdminIdAndDepId(String userId, String departmentId) {
+        Integer hospitalId = hospitalMapper.getHospitalById(Integer.valueOf(userId));
+        List<Doctor> doctors = doctorMapper.selectDocByHidAndDepId(hospitalId.toString(),departmentId.toString());
+        return doctors;
     }
 }

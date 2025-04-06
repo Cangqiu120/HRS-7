@@ -32,6 +32,7 @@ public class PrescribeMedicationsService {
 
     public Integer insertPrescriptions(String order) {
         SubPrescripetionDTO subPrescripetionDTO = registerMapper.selectByOrder(order);
+        subPrescripetionDTO.setOrder(order);
         // 获取当前的日期和时间
         LocalDateTime currentDateTime = LocalDateTime.now();
         // 定义日期时间格式
@@ -54,19 +55,13 @@ public class PrescribeMedicationsService {
     public PageInfo<PrescribeUserDTO> selectPrescribePage(Integer pageNum, Integer pageSize, Integer userId) {
         PageHelper.startPage(pageNum, pageSize);
         Doctor doctor = doctorMapper.selectDoctorByUserId(userId);
-        // 获取当前日期
-        LocalDate now = LocalDate.now();
-        // 定义日期格式化模式，格式化
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        // 将当前日期按照指定格式进行格式化
-        String date = now.format(formatter);
-        List<PrescribeUserDTO> prescribeUserDTOS = doctorMapper.selectRegisterByDocId(doctor.getId(),date);
+        List<PrescribeUserDTO> prescribeUserDTOS = doctorMapper.selectRegisterByDocId(doctor.getId());
         return PageInfo.of(prescribeUserDTOS);
     }
 
-    public List<PrescribeDetailDTO> selectPrescribe(Integer userId) {
+    public List<PrescribeDetailDTO> selectPrescribe(Integer userId, String order) {
         Doctor doctor = doctorMapper.selectDoctorByUserId(userId);
-        List<PrescribeDetailDTO> prescribeDetailDTOS = doctorMapper.selectPrescribe(doctor.getId());
+        List<PrescribeDetailDTO> prescribeDetailDTOS = doctorMapper.selectPrescribe(doctor.getId(),order);
         return prescribeDetailDTOS;
     }
 }

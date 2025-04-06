@@ -14,7 +14,8 @@ public enum ResultCodeEnum {
     USER_ACCOUNT_ERROR("5003", "账号或密码错误"),
     USER_NOT_EXIST_ERROR("5004", "用户不存在"),
     PARAM_PASSWORD_ERROR("5005", "原密码输入错误"),
-    ;
+    FILE_NOT_FOUND("5006","文件不存在" ),
+    TYPE_NOT_SUPPORT("5007","文件不支持" );
 
     public String code;
     public String msg;

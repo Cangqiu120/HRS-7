@@ -61,7 +61,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             log.info("Token 解析成功: userId={}, role={}", userId, role);
 
             // 根据userId查询数据库
-            if (RoleEnum.ADMIN.name().equals(role)) {
+            if (RoleEnum.ADMIN.name().equals(role) || RoleEnum.HospitalADMIN.name().equals(role)) {
                 account = adminService.selectById(Integer.valueOf(userId));
             } else if (RoleEnum.USER.name().equals(role)) {
                 account = userService.selectById(Integer.valueOf(userId));
