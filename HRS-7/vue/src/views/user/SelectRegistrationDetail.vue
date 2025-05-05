@@ -29,11 +29,39 @@
     <!-- 返回按钮 -->
     <div class="actions">
       <el-button type="primary" @click="handleBack">返回</el-button>
-      <!-- 添加申诉按钮，当 status 为 3 时显示 -->
       <el-button v-if="detail && detail.status === 3" type="warning" @click="handleAppeal">申诉</el-button>
       <el-button v-if="detail && detail.status === 3" type="success" @click="handleReferralConfirm1">当日复诊</el-button>
       <el-button v-if="detail && detail.status === 3" type="success" @click="handleReferralConfirm2">预约复诊</el-button>
+      <el-button v-if="detail && detail.status === 3" type="success" @click="evaluation">满意度评价</el-button>
     </div>
+
+    <!-- 评价对话框 - 现在嵌套在根div内 -->
+    <el-dialog
+        title="满意度评价"
+        :visible.sync="evaluationDialogVisible"
+        width="30%"
+        center>
+      <div class="evaluation-content">
+        <div class="evaluation-title">请为本次就诊体验评分</div>
+        <el-rate
+            v-model="evaluationForm.evaluationType"
+            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+            :texts="['极差', '较差', '一般', '满意', '非常满意']"
+            show-text>
+        </el-rate>
+        <el-input
+            type="textarea"
+            :rows="4"
+            placeholder="请输入您的评价内容（可选）"
+            v-model="evaluationForm.evaluationContent"
+            class="evaluation-textarea">
+        </el-input>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="evaluationDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitEvaluation">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -46,7 +74,14 @@ export default {
     return {
       detail: null, // 挂号详情信息
       loading: false, // 加载状态
-      error: '' // 错误信息
+      error: '' ,// 错误信息
+      evaluationDialogVisible: false, // 控制评价对话框显示
+      evaluationForm: {
+        registerOrder: '', // 挂号单号
+        evaluationType: 5, // 评价类型，默认5星
+        evaluationContent: '', // 评价内容
+        evaluationDate: '' // 评价日期
+      }
     };
   },
   created() {
@@ -191,6 +226,46 @@ export default {
           status: 5
         }
       });
+    },
+
+    evaluation() {
+      if (!this.detail) return;
+
+      this.evaluationForm = {
+        registerOrder: this.detail.order,
+        evaluationType: 5, // 默认5星好评
+        evaluationContent: '',
+        evaluationDate: parseTime(new Date(), '{y}-{m}-{d}')
+      };
+      this.evaluationDialogVisible = true;
+    },
+
+    // 提交评价
+    submitEvaluation() {
+      if (!this.evaluationForm.registerOrder) {
+        this.$message.error('评价失败：缺少必要参数');
+        return;
+      }
+
+      this.loading = true;
+      this.$request.post('/user/insertEvaluation', this.evaluationForm)
+          .then(response => {
+            if (response.code == 200) {
+              this.$message.success('评价成功');
+              this.evaluationDialogVisible = false;
+              // 可以刷新详情数据
+              this.fetchDetail();
+            } else {
+              this.$message.error(response.message || '评价失败');
+            }
+          })
+          .catch(error => {
+            console.error('评价失败:', error);
+            this.$message.error('评价失败，请稍后重试');
+          })
+          .finally(() => {
+            this.loading = false;
+          });
     }
   }
 };
@@ -220,5 +295,24 @@ export default {
 .actions {
   margin-top: 20px;
   text-align: center;
+}
+.evaluation-content {
+  text-align: center;
+}
+
+.evaluation-title {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.evaluation-textarea {
+  margin-top: 20px;
+}
+
+/* 调整评分组件样式 */
+.el-rate {
+  margin: 0 auto;
+  display: inline-block;
 }
 </style>

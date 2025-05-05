@@ -49,43 +49,23 @@
           <el-menu-item index="/Same-day-registration/reservation">当日挂号</el-menu-item>
         </el-submenu>
 
-        <!-- 特色诊疗 -->
-        <el-submenu index="special-treatment">
-          <template #title>
-            <i class="el-icon-medal"></i>
-            <span>特色诊疗</span>
-          </template>
-          <el-menu-item index="/special-treatment/difficult-consultation">疑难会诊中心</el-menu-item>
-          <el-menu-item index="/special-treatment/joint-clinic">联合门诊</el-menu-item>
-          <el-menu-item index="/special-treatment/special-departments">特色科室</el-menu-item>
-          <el-menu-item index="/special-treatment/special-diseases">专科专病</el-menu-item>
-        </el-submenu>
 
-        <!-- 医生介绍 -->
-        <el-submenu index="doctor-introduction">
+        <!-- 在线问诊 -->
+        <el-menu-item index="/userOnlineChat">
           <template #title>
             <i class="el-icon-user-solid"></i>
-            <span>医生介绍</span>
+            <span>在线问诊</span>
           </template>
-          <!-- 可添加医生介绍的子菜单 -->
-          <el-menu-item index="/doctor-introduction/all-doctors">全部医生</el-menu-item>
-        </el-submenu>
+        </el-menu-item>
 
-        <!-- 科室导航 -->
-        <el-submenu index="department-introduction">
-          <template #title>
-            <i class="el-icon-office-building"></i>
-            <span>科室导航</span>
-          </template>
-          <!-- 可添加科室导航的子菜单 -->
-          <el-menu-item index="/department-introduction/department-list">科室列表</el-menu-item>
-        </el-submenu>
+        <!-- 个人档案管理 -->
+        <el-menu-item   @click="goToArchieve()">个人档案管理</el-menu-item>
 
-        <!-- 就医指南 -->
-        <el-menu-item index="/medical-guide">
+        <!-- 候诊队列查询 -->
+        <el-menu-item @click="goToWaitingQueue">
           <template #title>
             <i class="el-icon-guide"></i>
-            <span>就医指南</span>
+            <span>候诊队列查询</span>
           </template>
         </el-menu-item>
 
@@ -97,27 +77,13 @@
           </template>
         </el-menu-item>
 
-        <!-- 新闻中心 -->
-        <el-submenu index="news-center">
-          <template #title>
-            <i class="el-icon-news"></i>
-            <span>新闻中心</span>
-          </template>
-          <el-menu-item index="/news-center/major-news">重大新闻</el-menu-item>
-          <el-menu-item index="/news-center/hospital-dynamics">医院动态</el-menu-item>
-          <el-menu-item index="/news-center/medical-frontier">医学前沿</el-menu-item>
-          <el-menu-item index="/news-center/video-news">视频新闻</el-menu-item>
-        </el-submenu>
-
         <!-- 健康科普 -->
-        <el-submenu index="health-popularization">
+        <el-menu-item index="/health-article">
           <template #title>
-            <i class="el-icon-health"></i>
+            <i class="el-icon-view"></i>
             <span>健康科普</span>
           </template>
-          <!-- 可添加健康科普的子菜单 -->
-          <el-menu-item index="/health-popularization/general-knowledge">科普常识</el-menu-item>
-        </el-submenu>
+        </el-menu-item>
       </el-menu>
     </div>
 
@@ -125,8 +91,7 @@
     <div class="hospital-main">
       <!-- 侧边栏 -->
       <div class="hospital-main-left">
-        <!-- 可以根据需要添加侧边栏内容 -->
-        <!-- 增加占位内容 -->
+
       </div>
 
       <!-- 数据表格 -->
@@ -194,6 +159,12 @@ export default {
           }
         })
       }
+    },
+    goToArchieve() {
+      this.$router.push("/archives-management");
+    },
+    goToWaitingQueue() {
+      this.$router.push("/Waiting-queues")
     }
   },
 };

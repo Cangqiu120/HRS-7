@@ -137,6 +137,8 @@ export default {
           return '待开药';
         case 2:
           return '待提交';
+        case 5:
+          return '复诊中';
         default:
           return '未知状态';
       }

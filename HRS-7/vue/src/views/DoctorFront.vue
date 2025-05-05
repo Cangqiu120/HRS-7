@@ -80,6 +80,13 @@
             <span>消息中心</span>
           </template>
         </el-menu-item>
+
+        <el-menu-item index="/doctor/logistics-application">
+          <template #title>
+            <i class="el-icon-edit-outline"></i>
+            <span>物流申请</span>
+          </template>
+        </el-menu-item>
       </el-menu>
     </div>
 

@@ -1,15 +1,15 @@
 package com.example.controller;
 
+import com.example.DTO.AddInformationDTO;
 import com.example.DTO.AutoScheduleRequest;
 import com.example.DTO.ConsultationRecordDTO;
 
+import com.example.common.Log;
 import com.example.common.Result;
-import com.example.entity.Consultation;
-import com.example.entity.Doctor;
-import com.example.entity.Hospital;
-import com.example.entity.RegistrationDetail;
+import com.example.entity.*;
 import com.example.service.DoctorService;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +17,7 @@ import java.util.List;
 
 @RequestMapping("/doctor")
 @RestController
+@Slf4j
 public class DoctorController {
     @Resource
     private DoctorService doctorService;
@@ -33,6 +34,7 @@ public class DoctorController {
         List<Doctor> doctors = doctorService.selectDocByAdminIdAndDepId(userId, departmentId);
         return Result.success(doctors);
     }
+
 
     @GetMapping("/selectDoctorById")
     public Result selectDoctorById(@RequestParam String doctorId) {
@@ -98,4 +100,62 @@ public class DoctorController {
         return Result.success(doctors);
     }
 
+    @GetMapping("/selectDoctorByUserId")
+    public Result selectDoctorByUserId(@RequestParam Integer userId) {
+        Doctor doctor = doctorService.selectDoctorByUserId(userId);
+        return Result.success(doctor);
+    }
+
+    @GetMapping("/selectArchives/{doctorId}")
+    public Result selectArchives(@PathVariable Integer doctorId){
+        List<Hospitalization> hospitalization = doctorService.selectArchives(doctorId);
+        return Result.success(hospitalization);
+    }
+
+    @PostMapping("/information/add")
+    public Result informationAdd(@RequestBody AddInformationDTO information){
+        doctorService.informationAdd(information);
+        return Result.success();
+    }
+
+    @PostMapping("/daily/add")
+    public Result dailyAdd(@RequestBody DailyCheckList dailyCheckList){
+        log.info("添加每日检查记录：{}", dailyCheckList);
+        doctorService.dailyAdd(dailyCheckList);
+        return Result.success();
+    }
+
+    @GetMapping("/information/getByHospitalizationId/{hospitalizationId}")
+    public Result getInformationByHospitalizationId(@PathVariable Integer hospitalizationId) {
+        AddInformationDTO information = doctorService.getInformationByHospitalizationId(hospitalizationId);
+        return Result.success(information);
+    }
+
+    @GetMapping("daily/getByHospitalizationId/{hospitalizationId}")
+    public Result getDailyCheckListByHospitalizationId(@PathVariable Integer hospitalizationId) {
+        List<DailyCheckList> dailyCheckLists = doctorService.getDailyCheckListByHospitalizationId(hospitalizationId);
+        return Result.success(dailyCheckLists);
+    }
+
+    @Log(module = "医院后台管理",type = "更新", description = "医生升职")
+    @PostMapping("/promote/{doctorId}")
+    public Result promoteDoctor(@PathVariable Integer doctorId) {
+        doctorService.promoteDoctor(doctorId);
+        return Result.success();
+    }
+
+    @PostMapping("/patient/discharge")
+    public Result dischargePatient(
+            @RequestParam Integer reportId,
+            @RequestParam String dischargeOrders) {
+        doctorService.dischargePatient(reportId, dischargeOrders);
+        return Result.success();
+    }
+
+    //申请物流
+    @PostMapping("/applicationLogistics")
+    public Result applicationLogistics(@RequestBody Logistics logistics){
+        doctorService.applicationLogistics(logistics);
+        return Result.success();
+    }
 }

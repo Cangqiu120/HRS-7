@@ -45,4 +45,8 @@ public class HospitalService {
     public Hospital selectDepById(Integer departmentId) {
         return hospitalMapper.selectDepById(departmentId);
     }
+
+    public String getHospitalName(Integer hospitalId) {
+        return hospitalMapper.getHospitalName(hospitalId);
+    }
 }

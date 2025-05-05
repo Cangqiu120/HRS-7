@@ -24,5 +24,7 @@ public class Hospital {
     private Department[] departments;
     //简介
     private String introduction;
+    //擅长疾病
+    private String specialty;
 
 }

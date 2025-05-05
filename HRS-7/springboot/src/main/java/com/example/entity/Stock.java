@@ -21,8 +21,6 @@ public class Stock {
     private String manufacturer;
     //有效期
     private String sellBy;
-    //供应商id
-    private Integer supplierId;
     private Integer price;
     //库存类型  1.药物  2.仪器
     private Integer type;

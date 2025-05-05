@@ -1,9 +1,6 @@
 package com.example.service;
 
-import com.example.DTO.PrescripetionDataDTO;
-import com.example.DTO.PrescriptionDTO;
-import com.example.DTO.PurchaseDTO;
-import com.example.DTO.StockDTO;
+import com.example.DTO.*;
 import com.example.entity.Stock;
 import com.example.entity.Supplier;
 import com.example.mapper.StockMapper;
@@ -49,11 +46,17 @@ public class StockService {
         purchaseDTO.setDate(formattedDateTime);
         Integer totalPrice = purchaseDTO.getQuantity() * purchaseDTO.getSupplierPrice();
         purchaseDTO.setTotalPrice(totalPrice);
-        Integer stockId = stockMapper.selectStockByName(purchaseDTO.getName());
         Integer supplierId = stockMapper.selectSupplierByName(purchaseDTO.getSupplierName());
-        stockMapper.insertPurchase(stockId, supplierId);
+        stockMapper.insertPurchase(purchaseDTO.getName(), supplierId);
         stockMapper.purchase(purchaseDTO);
+
+        log.info("purchaseDTO:{}", purchaseDTO);
+        stockMapper.inserStock(purchaseDTO);
         //String order = getRandomOrder();
+    }
+
+    public List<ResourceDTO> selectResource(Integer hospitalAdminId, Integer departmentId, Integer type) {
+        return stockMapper.selectResource(hospitalAdminId, departmentId, type);
     }
 
 /*    public static String getRandomOrder(){

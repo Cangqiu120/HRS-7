@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.DTO.AppealDTO;
 import com.example.DTO.PatientAppealDTO;
+import com.example.common.Log;
 import com.example.common.Result;
 import com.example.entity.Register;
 import com.example.service.RegisterService;
@@ -53,6 +54,7 @@ public class RegisterController {
         return Result.success(patientAppealDTO);
     }
 
+    @Log(module = "医院后台管理",type = "更新", description = "处理患者申诉")
     @PostMapping("/handleAppeal/{appealOrder}")
     public Result handleAppeal(@PathVariable String appealOrder){
         registerService.handleAppeal(appealOrder);

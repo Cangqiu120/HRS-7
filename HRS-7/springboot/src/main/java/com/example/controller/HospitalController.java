@@ -52,4 +52,10 @@ public class HospitalController {
         Hospital hospital = hospitalService.selectDepById(departmentId);
         return Result.success(hospital.getName());
     }
+
+    @GetMapping("/getHospitalName")
+    public Result getHospitalName(@RequestParam Integer hospitalId) {
+        String hospitalName = hospitalService.getHospitalName(hospitalId);
+        return Result.success(hospitalName);
+    }
 }

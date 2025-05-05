@@ -1,10 +1,13 @@
 package com.example.controller;
 
+import com.example.DTO.EvaluationDTO;
+import com.example.DTO.WaitingQueuesDTO;
 import com.example.common.Result;
-import com.example.entity.RegistrationDetail;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.service.UserService;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -15,6 +18,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
 
     @Resource
@@ -91,5 +95,83 @@ public class UserController {
                                      @RequestParam Integer userId){
         PageInfo<RegistrationDetail> page = userService.selectRegistrationsPage(pageNum, pageSize,userId);
         return Result.success(page);
+    }
+
+    //查找个人档案: 包括个人信息和住院记录,当前为查找住院记录
+    @GetMapping("/selectArchives/{userId}")
+    public Result selectArchives(@PathVariable Integer userId){
+        List<Hospitalization> hospitalization = userService.selectArchives(userId);
+        return Result.success(hospitalization);
+    }
+
+    @GetMapping("/selectHospitalizationById/{hospitalizationId}")
+    public Result selectHospitalizationById(@PathVariable Integer hospitalizationId){
+        HospitalizationInformation hospitalizationInfo = userService.selectHospitalizationById(hospitalizationId);
+        return Result.success(hospitalizationInfo);
+    }
+
+    @GetMapping("/selectReport/{reportId}")
+    public Result selectReportById(@PathVariable Integer reportId){
+        Report report = userService.selectReportById(reportId);
+        return Result.success(report);
+    }
+
+    @GetMapping("/dailyCheckList/getByHospitalizationId/{id}")
+    public Result getDailyCheckListByHospitalizationId(@PathVariable Integer id) {
+        List<DailyCheckList> dailyCheckList = userService.getDailyCheckListByHospitalizationId(id);
+        return Result.success(dailyCheckList);
+    }
+
+    @PostMapping("/insertEvaluation")
+    public Result insertEvaluation(@RequestBody EvaluationDTO evaluation){
+        userService.insertEvaluation(evaluation);
+        return Result.success();
+    }
+
+    @GetMapping("/selectWaitingQueues")
+    public Result selectWaitingQueues(@RequestParam String orderNumber,@RequestParam String registerTime){
+        List<WaitingQueuesDTO> waitingQueues = userService.selectWaitingQueues(orderNumber,registerTime);
+        return Result.success(waitingQueues);
+    }
+
+    @GetMapping("/register/today")
+    public Result selectRegisterToday(@RequestParam Integer userId){
+        Register register = userService.selectRegisterToday(userId);
+        log.info("register:{}",register);
+        return Result.success(register);
+    }
+
+    @GetMapping("/selectHealthArticlesPage")
+    public Result electHealthArticlesPage(@RequestParam(defaultValue = "1") Integer pageNum,
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam Integer hospitalId){
+        PageInfo<HealthArticle> page = userService.selectHealthArticles(pageNum, pageSize,hospitalId);
+        return Result.success(page);
+    }
+
+    @GetMapping("/getHealthArticle")
+    public Result getHealthArticle(@RequestParam Integer id){
+        HealthArticle healthArticle = userService.getHealthArticle(id);
+        return Result.success(healthArticle);
+    }
+
+    @PostMapping("/likeArticle/{id}")
+    public Result likeArticle(@PathVariable Integer id){
+        userService.likeArticle(id);
+        return Result.success();
+    }
+
+    @GetMapping("/getNoticePage")
+    public Result getNoticePage(@RequestParam(defaultValue = "1") Integer pageNum,
+                                @RequestParam(defaultValue = "10") Integer pageSize,
+                                @RequestParam Integer hospitalId){
+        PageInfo<Notice> page = userService.selectNotices(pageNum, pageSize,hospitalId);
+        return Result.success(page);
+    }
+
+    @GetMapping("/getNotice")
+    public Result getNotice(@RequestParam Integer id){
+        Notice notice = userService.getNotice(id);
+        return Result.success(notice);
     }
 }

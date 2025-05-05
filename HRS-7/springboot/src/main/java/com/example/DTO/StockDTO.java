@@ -14,7 +14,6 @@ public class StockDTO {
     private String department;
     private String manufacturer;
     private String sellBy;
-    private String supplier;
     private Integer price;
     private Integer status;
 }

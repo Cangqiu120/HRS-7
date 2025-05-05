@@ -20,4 +20,6 @@ public class PurchaseDTO {
     private Integer supplierPrice;
     private String date;
     private Integer totalPrice;
+    private Integer hospitalAdminId;
+    private String department;
 }

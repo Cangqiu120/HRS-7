@@ -26,4 +26,8 @@ public class Doctor {
     //简介
     private String introduction;
     private String appealedNumber;
+    private double salary;
+    private String finalSalary;
+    private Integer evaluationCount;
+    private double evaluation;
 }

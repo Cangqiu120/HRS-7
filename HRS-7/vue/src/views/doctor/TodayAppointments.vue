@@ -28,7 +28,7 @@
 
       <!-- 操作 -->
       <!-- 操作 -->
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="300">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleViewDetails(scope.row)">查看详情</el-button>
 
@@ -75,6 +75,9 @@
           >
             复诊
           </el-button>
+
+          <el-button type="primary" size="small" @click="createArchive(scope.row)">建立住院档案</el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -193,7 +196,6 @@ export default {
         this.$router.push({
           name: 'Prescription',
           params: {
-            id: row.order,
             name: row.userName
           } // 传递挂号 ID
         });
@@ -222,8 +224,42 @@ export default {
         // 用户取消操作
       });
     },
-    handleFollowUp(scope){
+    handleFollowUp(row){
       //复诊
+      this.$confirm('是否开始复诊？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(row.userName);
+        this.$router.push({
+          name: 'Consultation',
+          params: {
+            id: row.order,
+            name: row.userName
+          } // 传递挂号 ID
+        });
+      }).catch(() => {
+        // 用户取消操作
+      });
+    },
+    createArchive(row){
+      //建立档案
+      this.$confirm('是否开始建立住院档案？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(row.order);
+        this.$router.push({
+          name: 'CreateArchive',
+          params: {
+            orderId: row.order
+          } // 传递挂号 ID
+        });
+      }).catch(() => {
+        // 用户取消操作
+      });
     }
   }
 };

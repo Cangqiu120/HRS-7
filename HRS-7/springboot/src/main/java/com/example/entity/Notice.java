@@ -1,62 +1,22 @@
 package com.example.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 /**
  * 公告信息表
 */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Notice implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    /** ID */
-    private Integer id;
-    /** 标题 */
-    private String title;
-    /** 内容 */
-    private String content;
-    /** 创建时间 */
-    private String time;
-    /** 创建人 */
-    private String user;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
+    private Integer id;          // 动态ID
+    private String title;       // 动态标题 (10字以内)
+    private String content;     // 动态内容 (100字以内)
+    private String publishTime; // 发布时间 (yyyy-MM-dd)
+    private Integer status;     // 状态 (0-显示, 1-隐藏)
+    private Integer hospitalId; // 医院ID
 }

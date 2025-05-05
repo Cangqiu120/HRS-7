@@ -4,35 +4,75 @@
       <el-menu :default-active="activeOption" @select="handleOptionSelect">
         <el-menu-item index="drugManagement">药物管理</el-menu-item>
         <el-menu-item index="instrumentManagement">仪器管理</el-menu-item>
+        <el-menu-item index="resourceStatistics">资源统计</el-menu-item>
       </el-menu>
     </div>
     <div class="main-content">
       <h2 class="page-title">仓库管理</h2>
-      <el-table :data="currentWarehouseList" border style="width: 100%;">
-        <el-table-column prop="id" label="id" width="35" ></el-table-column>
-        <el-table-column prop="name" label="物品名称" width="100"></el-table-column>
-        <el-table-column prop="stock" label="库存" width="100"></el-table-column>
-        <el-table-column prop="department" label="所属部门" width="150"></el-table-column>
-        <el-table-column prop="manufacturer" label="生产日期" width="150"></el-table-column>
-        <el-table-column prop="sellBy" label="有效期" width="150"></el-table-column>
-        <el-table-column prop="supplier" label="供应商" width="100"></el-table-column>
-        <el-table-column prop="price" label="价格" width="100"></el-table-column>
-        <el-table-column prop="status" label="状态" width="100" :formatter="formatStatus"></el-table-column>
-        <el-table-column label="操作" width="250"> <!-- 调整宽度以容纳新按钮 -->
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleManage(scope.row)">管理</el-button>
-            <el-button size="mini" type="success" @click="handlePurchase(scope.row)">进货</el-button>
-            <!-- 根据状态显示不同的按钮文本和点击事件 -->
-            <el-button
-                size="mini"
-                :type="scope.row.status === 1? 'danger' :'success'"
-                @click="toggleStatus(scope.row)"
-            >
-              {{ scope.row.status === 1? '停用' : '取消停用' }}
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+
+      <!-- 资源统计专属区域 -->
+      <div v-if="activeOption === 'resourceStatistics'" class="resource-statistics">
+        <el-form :inline="true" :model="resourceQuery" class="resource-form">
+
+          <el-form-item label="科室">
+            <el-select v-model="resourceQuery.departmentId" placeholder="请选择科室">
+              <el-option
+                  v-for="department in departments"
+                  :key="department.id"
+                  :label="department.name"
+                  :value="department.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="类型">
+            <el-select v-model="resourceQuery.type" placeholder="请选择类型">
+              <el-option label="药品" :value="1"></el-option>
+              <el-option label="仪器" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="fetchResourceStatistics">查询</el-button>
+          </el-form-item>
+        </el-form>
+
+        <el-table :data="resourceStatistics" border style="width: 100%;">
+          <el-table-column prop="name" label="物品名称" width="150"></el-table-column>
+          <el-table-column prop="stock" label="库存数量" width="120"></el-table-column>
+          <el-table-column prop="time" label="保质期" width="150"></el-table-column>
+          <el-table-column prop="status" label="状态" width="120" :formatter="formatStatus"></el-table-column>
+
+        </el-table>
+      </div>
+
+      <div v-else>
+        <el-table
+            :data="currentWarehouseList"
+            border
+            style="width: 100%;"
+        >
+          <el-table-column prop="id" label="id" width="35"></el-table-column>
+          <el-table-column prop="name" label="物品名称" width="100"></el-table-column>
+          <el-table-column prop="stock" label="库存" width="100"></el-table-column>
+          <el-table-column prop="department" label="所属部门" width="150"></el-table-column>
+          <el-table-column prop="manufacturer" label="生产日期" width="150"></el-table-column>
+          <el-table-column prop="sellBy" label="有效期" width="150"></el-table-column>
+          <el-table-column prop="price" label="价格" width="100"></el-table-column>
+          <el-table-column prop="status" label="状态" width="100" :formatter="formatStatus"></el-table-column>
+          <el-table-column label="操作" width="250">
+            <template slot-scope="scope">
+              <el-button size="mini" @click="handleManage(scope.row)">管理</el-button>
+              <el-button size="mini" type="success" @click="handlePurchase(scope.row)">进货</el-button>
+              <el-button
+                  size="mini"
+                  :type="scope.row.status === 1? 'danger' :'success'"
+                  @click="toggleStatus(scope.row)"
+              >
+                {{ scope.row.status === 1? '停用' : '取消停用' }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <!-- 模态框 -->
       <el-dialog
           title="管理信息"
@@ -43,6 +83,7 @@
       </el-dialog>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -59,6 +100,14 @@ export default {
       currentType: 1, // 新增一个变量来记录当前的type
       dialogVisible: false, // 控制模态框的显示隐藏
       message: '', // 模态框中显示的信息
+
+      resourceQuery: {
+        hospitalId: null,
+        departmentId: null,
+        type: 1
+      },
+      departments: [], // 科室列表
+      resourceStatistics: [] // 资源统计数据
     };
   },
   created() {
@@ -67,15 +116,57 @@ export default {
   },
   methods: {
     handleOptionSelect(option) {
+      this.activeOption = option;
       if (option === "drugManagement") {
         this.currentWarehouseList = this.drugWarehouseList;
-        this.currentType = 1; // 当选择药物管理时，更新currentType为1
+        this.currentType = 1;
         this.fetchStockDetail(1);
       } else if (option === "instrumentManagement") {
         this.currentWarehouseList = this.instrumentWarehouseList;
-        this.currentType = 2; // 当选择仪器管理时，更新currentType为2
+        this.currentType = 2;
         this.fetchStockDetail(2);
+      } else if (option === "resourceStatistics") {
+        if (this.user.id) {
+          this.fetchDepartments(this.user.id);
+        }
       }
+    },
+    fetchDepartments() {
+      this.$request.get('/hospital/departmentList', {
+        params: {
+          userId: this.user.id
+        }
+      }).then(response => {
+        if (response.code == 200) {
+          this.departments = response.data
+        } else {
+          this.$message.error(response.data.message || '获取科室列表失败')
+        }
+      })
+    },
+
+    // 获取资源统计数据
+    fetchResourceStatistics() {
+      if (!this.resourceQuery.departmentId) {
+        this.$message.warning('请选择医院和科室');
+        return;
+      }
+
+      this.$request.get('/stock/selectResource', {
+        params: {
+          hospitalAdminId: this.user.id,
+          departmentId: this.resourceQuery.departmentId,
+          type: this.resourceQuery.type
+        }
+      }).then(response => {
+        if (response.code == 200) {
+          this.resourceStatistics = Array.isArray(response.data) ?
+              response.data :
+              [response.data];
+        } else {
+          this.$message.error(response.data.message || '获取资源统计失败');
+        }
+      });
     },
 
     fetchStockDetail(type) {
@@ -105,6 +196,7 @@ export default {
             this.loading = false;
           });
     },
+
 
     formatStatus(row, column, cellValue) {
       // 新增的判断逻辑，根据currentType来确定使用哪个列表的数据
@@ -167,7 +259,9 @@ export default {
       this.$router.push({
         name: 'Purchase',
         query: {
-          name : row.name
+          name : row.name,
+          hospitalAdminId: this.user.id,
+          department: row.department,
         }
       })
     },

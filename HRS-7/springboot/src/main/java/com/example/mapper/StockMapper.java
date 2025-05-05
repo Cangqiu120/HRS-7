@@ -1,6 +1,7 @@
 package com.example.mapper;
 
 import com.example.DTO.PurchaseDTO;
+import com.example.DTO.ResourceDTO;
 import com.example.DTO.StockDTO;
 import com.example.entity.Stock;
 import com.example.entity.Supplier;
@@ -33,6 +34,10 @@ public interface StockMapper {
     @Select("select id from `cq-hospital`.supplier where name = #{supplierName}")
     Integer selectSupplierByName(String supplierName);
 
-    @Insert("insert into `cq-hospital`.purchase (stock_id, supplier_id) values (#{stockId}, #{supplierId})")
-    void insertPurchase(Integer stockId, Integer supplierId);
+    @Insert("insert into `cq-hospital`.purchase (stock_name, supplier_id) values (#{stockName}, #{supplierId})")
+    void insertPurchase(String stockName, Integer supplierId);
+
+    void inserStock(PurchaseDTO purchaseDTO);
+
+    List<ResourceDTO> selectResource(Integer hospitalAdminId, Integer departmentId, Integer type);
 }

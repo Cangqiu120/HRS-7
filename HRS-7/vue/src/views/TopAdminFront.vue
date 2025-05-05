@@ -33,20 +33,8 @@
     <!-- 导航栏 -->
     <div class="admin-nav">
       <el-menu mode="horizontal" :default-active="activeMenu" router>
-        <!-- 首页 -->
-        <el-menu-item index="/topAdmin/hospital-information-management">
-          <template #title>
-            <i class="el-icon-s-home"></i>
-            <span>医院信息管理</span>
-          </template>
-        </el-menu-item>
 
-        <el-menu-item index="/topAdmin/hospitalManagement">
-          <template #title>
-            <i class="el-icon-user-solid"></i>
-            <span>医院管理</span>
-          </template>
-        </el-menu-item>
+
 
         <el-menu-item index="/topAdmin/hospital-rating">
           <template #title>

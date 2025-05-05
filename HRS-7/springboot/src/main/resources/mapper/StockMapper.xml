@@ -12,6 +12,13 @@ INSERT INTO `cq-hospital`.purchase_report (name, quantity, supplier_address, sup
     </insert>
     <insert id="insert" parameterType="com.example.entity.Stock">
     </insert>
+    <update id="inserStock">
+        update `cq-hospital`.`stock`
+        join `cq-hospital`.admin ad on ad.hospital_id = stock.hospital_id
+        join `cq-hospital`.department d on d.id = stock.department_id
+        set stock = stock + #{quantity}
+        where stock.name = #{name} and ad.id = #{hospitalAdminId} and d.name = #{department}
+    </update>
     <select id="selectByDocId" resultType="com.example.entity.Stock">
         SELECT s.id,
                s.hospital_id,
@@ -21,7 +28,6 @@ INSERT INTO `cq-hospital`.purchase_report (name, quantity, supplier_address, sup
                s.price,
                s.manufacturer,
                s.sell_by,
-               s.supplier_id,
                s.type,
                s.status
         FROM `cq-hospital`.`stock` s
@@ -38,13 +44,10 @@ INSERT INTO `cq-hospital`.purchase_report (name, quantity, supplier_address, sup
                dpt.name AS department,
                s.manufacturer,
                s.sell_by,
-               su.name  AS supplier,
                s.price,
                s.status
         FROM `cq-hospital`.`stock` s
                  JOIN `cq-hospital`.department dpt ON s.department_id = dpt.id
-                 JOIN `cq-hospital`.purchase p ON p.stock_id = s.id
-                 JOIN `cq-hospital`.supplier su ON su.id = p.supplier_id
                  JOIN `cq-hospital`.hospital h ON h.id = s.hospital_id
                  JOIN `cq-hospital`.admin ad ON ad.hospital_id = h.id
         WHERE s.type = #{type}
@@ -60,6 +63,22 @@ INSERT INTO `cq-hospital`.purchase_report (name, quantity, supplier_address, sup
                  JOIN `cq-hospital`.supply_stock ss ON ss.med_name = s.name
                  JOIN `cq-hospital`.supplier su ON su.id = ss.supplier
         WHERE s.name = #{name}
+    </select>
+    <select id="selectResource" resultType="com.example.DTO.ResourceDTO">
+        SELECT
+            stock.name,
+            stock,
+            DATEDIFF(STR_TO_DATE(sell_by, '%Y-%m-%d'), CURDATE()) AS time,
+            status
+        FROM
+            `cq-hospital`.stock
+        join `cq-hospital`.admin a on stock.hospital_id = a.hospital_id
+        WHERE
+            a.id = #{hospitalAdminId}
+          AND department_id = #{departmentId}
+        AND type = #{type}
+        ORDER BY
+            time ASC;  -- 按距离过期天数升序排列
     </select>
 
 

@@ -1,13 +1,12 @@
 package com.example.service;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.example.DTO.EvaluationDTO;
+import com.example.DTO.WaitingQueuesDTO;
 import com.example.common.Constants;
 import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
-import com.example.entity.Account;
-import com.example.entity.Doctor;
-import com.example.entity.RegistrationDetail;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.exception.CustomException;
 import com.example.mapper.UserMapper;
 import com.example.utils.TokenUtils;
@@ -143,5 +142,68 @@ public class UserService {
         PageHelper.startPage(pageNum, pageSize);
         List<RegistrationDetail> registrationDetails = userMapper.selectRegistrations(userId);
         return PageInfo.of(registrationDetails);
+    }
+
+    public List<Hospitalization> selectArchives(Integer userId) {
+        //查询住院记录
+       return userMapper.selectHospitalizationById(userId);
+    }
+
+    public HospitalizationInformation selectHospitalizationById(Integer hospitalizationId) {
+        //查询住院信息
+        return userMapper.selectHospitalizationInformationById(hospitalizationId);
+    }
+
+    public Report selectReportById(Integer reportId) {
+        //查询报告
+        return userMapper.selectReportById(reportId);
+    }
+
+    public List<DailyCheckList> getDailyCheckListByHospitalizationId(Integer id) {
+        return userMapper.getDailyCheckListByHospitalizationId(id);
+    }
+
+    public void insertEvaluation(EvaluationDTO evaluation) {
+        userMapper.insertEvaluation(evaluation);
+    }
+
+    public List<WaitingQueuesDTO> selectWaitingQueues(String order,String registerTime) {
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = today.format(formatter);
+        Integer doctorId = doctorService.selectDoctorIdByOrder(order);
+        return userMapper.selectWaitingQueues(doctorId,registerTime,formattedDate);
+    }
+
+    public Register selectRegisterToday(Integer userId) {
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = today.format(formatter);
+        return userMapper.selectRegisterToday(userId,formattedDate);
+    }
+
+    public PageInfo<HealthArticle> selectHealthArticles(Integer pageNum, Integer pageSize,Integer hospitalId){
+        PageHelper.startPage(pageNum, pageSize);
+        List<HealthArticle> healthArticles = userMapper.selectHealthArticle(hospitalId);
+        return PageInfo.of(healthArticles);
+    }
+
+    public HealthArticle getHealthArticle(Integer articleId) {
+        userMapper.updateViews(articleId);
+        return userMapper.getHealthArticle(articleId);
+    }
+
+    public void likeArticle(Integer id) {
+        userMapper.likeArticle(id);
+    }
+
+    public PageInfo<Notice> selectNotices(Integer pageNum, Integer pageSize,Integer hospitalId){
+        PageHelper.startPage(pageNum, pageSize);
+        List<Notice> notices = userMapper.selectNotice(hospitalId);
+        return PageInfo.of(notices);
+    }
+
+    public Notice getNotice(Integer id) {
+        return userMapper.getNotice(id);
     }
 }

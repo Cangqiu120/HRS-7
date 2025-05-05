@@ -52,7 +52,9 @@ export default {
         supplierPrice: null,
         supplierPhone: null,
         supplierAddress: null,
-        supplierLeader: null
+        supplierLeader: null,
+        hospitalAdminId: this.$route.query.hospitalAdminId || null,
+        department: this.$route.query.department || null
       },
       purchaseRules: {
         quantity: [

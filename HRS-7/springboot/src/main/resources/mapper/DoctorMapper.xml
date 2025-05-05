@@ -7,6 +7,23 @@
     <sql id="Base_Column_List">
         id, name, department_id,phone, gender, hospital_id, status, user_id,introduction
     </sql>
+    <update id="informationAdd">
+        UPDATE `cq-hospital`.information
+        join `cq-hospital`.hospitalization h on information.id = h.information_id
+        SET disease = #{disease},
+            surgery = #{surgery}
+        where h.id = #{hospitalizationId}
+    </update>
+    <update id="updateInformation">
+        UPDATE `cq-hospital`.information i
+            JOIN `cq-hospital`.report r ON i.id = r.information_id
+        SET
+            i.out_report_id = #{outReportId},
+            i.discharge_orders = #{dischargeOrders},
+            i.discharge_time = #{formattedDateTime}
+        WHERE
+            r.id = #{outReportId}
+    </update>
     <select id="selectAppointments" resultType="com.example.entity.RegistrationDetail">
         SELECT
             r.`order`,
@@ -100,6 +117,46 @@
                 JOIN
             `cq-hospital`.user u ON u.id = r.user_id
         WHERE p.doctor_id = #{id} AND r.status = 2 OR r.status = 3;
+    </select>
+    <select id="selectHospitalizationById" resultType="com.example.entity.Hospitalization">
+        select
+            hospitalization.id,
+            u.name as userName,
+            doc.name as doctorName,
+            d.name as departmentName,
+            h.name as hospitalName
+        from `cq-hospital`.hospitalization
+                 join `cq-hospital`.department d on d.id = hospitalization.department_id
+                 join `cq-hospital`.doctor doc on doc.id = hospitalization.doctor_id
+                 join `cq-hospital`.user u on u.id = hospitalization.user_id
+                 join `cq-hospital`.hospital h on h.id = hospitalization.hospital_id
+        where `cq-hospital`.hospitalization.doctor_id = #{id}
+    </select>
+    <select id="selectDocByHidAndDepId" resultType="com.example.entity.Doctor">
+        SELECT
+            d.*,
+            p.performance,
+            ROUND(d.salary * IFNULL(p.performance, 1), 2) AS finalSalary,
+            IFNULL(e.evaluationCount, 0) AS evaluationCount,
+            IFNULL(e.avgEvaluation, 0) AS evaluation
+        FROM
+            `cq-hospital`.doctor d
+                LEFT JOIN
+            `cq-hospital`.performance p ON d.id = p.doctor_id
+                AND p.`year_month` = DATE_FORMAT(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), '%Y-%m')
+                LEFT JOIN (
+                SELECT
+                    doctor_id,
+                    COUNT(*) AS evaluationCount,
+                    AVG(evaluated_object_type) AS avgEvaluation  -- 直接使用数值型评价分数
+                FROM
+                    `cq-hospital`.evaluation
+                GROUP BY
+                    doctor_id
+            ) e ON d.id = e.doctor_id
+        WHERE
+            d.hospital_id = #{hid}
+          AND d.department_id = #{depId}
     </select>
 
 </mapper>

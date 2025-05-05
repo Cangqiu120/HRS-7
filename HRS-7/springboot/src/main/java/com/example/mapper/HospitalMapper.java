@@ -23,4 +23,7 @@ public interface HospitalMapper {
 
     @Select("select * from `cq-hospital`.department where id = #{departmentId}")
     Hospital selectDepById(Integer departmentId);
+
+    @Select("select name from `cq-hospital`.hospital where id = #{hospitalId}")
+    String getHospitalName(Integer hospitalId);
 }

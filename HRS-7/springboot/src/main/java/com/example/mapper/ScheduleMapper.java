@@ -1,5 +1,6 @@
 package com.example.mapper;
 
+import com.example.entity.LeaveApplication;
 import com.example.entity.Schedule;
 import org.apache.ibatis.annotations.*;
 
@@ -41,4 +42,16 @@ public interface ScheduleMapper {
     Schedule getScheduleByDoctorId(int doctorId, int hospitalId, int departmentId, Date scheduleDate);
 
     Schedule getScheduleByDoctorName(String doctorName, String hospitalName, String departmentName, Date scheduleDate);
+
+
+    @Insert("insert into `cq-hospital`.leave_application (doctor_id, department_id, hospital_id, leave_type, leave_date, application_date, approval_status, reason) VALUES (#{doctorId}, #{departmentId}, #{hospitalId}, #{leaveType}, #{leaveDate}, #{applicationDate}, #{approvalStatus}, #{reason})")
+    void leaveApplication(LeaveApplication leaveApplication);
+
+    List<LeaveApplication> getLeaveApplicationsByDoctorId(Integer hospitalAdminId, Integer departmentId, Date startDate, Date endDate);
+
+    List<LeaveApplication> getLeaveApplicationsAllByDoctorId(Integer doctorId, Date startDate, Date endDate);
+    @Update("update  `cq-hospital`.leave_application set approval_status = '1' where id = #{id}")
+    void approve(Integer id);
+
+    void deleteScheduleByLeave(Integer id);
 }

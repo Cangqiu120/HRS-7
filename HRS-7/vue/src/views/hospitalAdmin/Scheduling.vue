@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <el-card>
+      <!-- 原有头部代码保持不变 -->
       <div slot="header" class="clearfix">
         <span>医生排班管理</span>
         <el-button
@@ -48,6 +49,7 @@
                 border
                 style="width: 100%"
             >
+              <!-- 原有表格列保持不变 -->
               <el-table-column prop="doctorName" label="医生" width="150" fixed>
                 <template slot-scope="scope">
                   {{ scope.row.doctorName }}
@@ -72,15 +74,64 @@
                   </el-select>
                 </template>
               </el-table-column>
+
+              <!-- 修改后的请假信息列 -->
+              <el-table-column label="请假信息" width="180" fixed="right">
+                <template slot-scope="scope">
+                  <div v-if="hasLeaveInfo(scope.row.doctorId)" class="leave-info">
+                    <el-tag
+                        v-for="leave in getLeaveInfo(scope.row.doctorId)"
+                        :key="leave.id"
+                        :type="getLeaveTagType(leave.status)"
+                        size="mini"
+                        style="margin-right: 5px; margin-bottom: 5px; cursor: pointer;"
+                        @click="showLeaveDetail(leave, scope.row.doctorName)"
+                    >
+                      {{ formatLeaveDate(leave.leaveDate) }}: {{ getLeaveTypeName(leave.type) }}
+                    </el-tag>
+                  </div>
+                  <div v-else class="no-leave">
+                    无请假
+                  </div>
+                </template>
+              </el-table-column>
             </el-table>
           </el-card>
         </el-col>
       </el-row>
     </el-card>
+
+    <!-- 请假详情对话框 -->
+    <el-dialog
+        title="请假详情"
+        :visible.sync="leaveDetailVisible"
+        width="500px"
+        :close-on-click-modal="false"
+    >
+      <div v-if="currentLeave" class="leave-detail">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="医生姓名">{{ currentDoctorName }}</el-descriptions-item>
+          <el-descriptions-item label="请假日期">{{ formatLeaveDate(currentLeave.leaveDate) }}</el-descriptions-item>
+          <el-descriptions-item label="请假类型">{{ getLeaveTypeName(currentLeave.leaveType) }}</el-descriptions-item>
+          <el-descriptions-item label="请假原因">{{ currentLeave.reason }}</el-descriptions-item>
+
+          <el-descriptions-item label="申请时间">{{ formatDateTime(currentLeave.createTime) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <div v-if="currentLeave.approvalStatus == '0'" class="leave-actions">
+          <el-button type="success" @click="handleLeaveAction('1')">通过申请</el-button>
+          <el-button type="danger" @click="handleLeaveAction('0')">拒绝申请</el-button>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="leaveDetailVisible = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import {
   getSchedulesByDepartment,
   addSchedule,
@@ -102,10 +153,15 @@ export default {
       currentWeek: this.getNextWeekStartDate(),
       weekDays: [],
       scheduleData: [],
+      leaveInfo: [],
       defaultProps: {
         children: 'children',
         label: 'name'
-      }
+      },
+      // 新增的请假详情相关数据
+      leaveDetailVisible: false,
+      currentLeave: null,
+      currentDoctorName: ''
     }
   },
   created() {
@@ -139,34 +195,32 @@ export default {
       }).then(response => {
         if (response.code == 200) {
           this.departments = response.data
-        }else {
+        } else {
           this.$message.error(response.data.message || '获取科室列表失败')
         }
       })
     },
-
     async handleDepartmentClick(data) {
       this.selectedDepartment = data
       await this.fetchDoctors(data.id)
       await this.fetchSchedules()
+      await this.fetchLeaveInfo()
     },
-
     fetchDoctors(departmentId) {
       this.$request.get('/doctor/selectDocByAdminIdAndDepId', {
         params: {
-           userId: this.user.id,
+          userId: this.user.id,
           departmentId: departmentId
         }
       }).then(response => {
         if (response.code == 200) {
           this.doctors = response.data
           this.prepareScheduleData()
-        }else {
+        } else {
           this.$message.error(response.data.message || '获取医生列表失败')
         }
       })
     },
-
     prepareScheduleData() {
       this.scheduleData = this.doctors.map(doctor => {
         const schedules = {}
@@ -186,7 +240,7 @@ export default {
       this.loading = true
       this.generateWeekDays()
       this.prepareScheduleData()
-
+      this.fetchLeaveInfo()
       try {
         const startDate = new Date(this.currentWeek)
         const endDate = new Date(startDate)
@@ -199,7 +253,6 @@ export default {
             endDate
         )
 
-        // 更新排班数据
         response.data.forEach(schedule => {
           const scheduleDate = parseTime(schedule.scheduleDate, '{y}-{m}-{d}')
           const doctorSchedule = this.scheduleData.find(
@@ -215,21 +268,83 @@ export default {
         this.loading = false
       }
     },
+    async fetchLeaveInfo() {
+      if (!this.selectedDepartment) return;
+
+      try {
+        const startDate = new Date(this.currentWeek)
+        const endDate = new Date(startDate)
+        endDate.setDate(startDate.getDate() + 6)
+
+        const response = await this.$request.get('/api/schedule/leave/list', {
+          params: {
+            hospitalAdminId: this.user.id,
+            departmentId: this.selectedDepartment.id,
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0]
+          }
+        });
+
+        if (response.code == 200) {
+          this.leaveInfo = response.data || [];
+        } else {
+          this.$message.error(response.message || '获取请假信息失败');
+        }
+      } catch (error) {
+        console.error('获取请假信息失败:', error);
+        this.$message.error('获取请假信息失败');
+      }
+    },
+    hasLeaveInfo(doctorId) {
+      return this.leaveInfo.some(leave => leave.doctorId === doctorId);
+    },
+    getLeaveInfo(doctorId) {
+      return this.leaveInfo.filter(leave => leave.doctorId === doctorId);
+    },
+    formatLeaveDate(date) {
+      return dayjs(date).format('MM-DD');
+    },
+    formatDateTime(date) {
+      return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
+    },
+    getLeaveTypeName(type) {
+      const map = {
+        personal: '事假',
+        sick: '病假',
+        annual: '年假',
+        other: '其他'
+      };
+      return map[type] || type;
+    },
+    getLeaveTagType(status) {
+      const map = {
+        PENDING: 'warning',
+        APPROVED: 'success',
+        REJECTED: 'danger',
+        CANCELLED: 'info'
+      };
+      return map[status] || '';
+    },
+    getLeaveStatusName(status) {
+      const map = {
+        PENDING: '待审批',
+        APPROVED: '已通过',
+        REJECTED: '已拒绝',
+        CANCELLED: '已取消'
+      };
+      return map[status] || status;
+    },
     async handleShiftChange(doctorId, date, shiftType) {
       try {
-        // 首先查找是否已有排班记录
         const existingSchedule = await this.findExistingSchedule(doctorId, date)
 
         if (shiftType) {
-          // 有班次选择
           if (existingSchedule) {
-            // 更新现有排班
             await updateSchedule({
               id: existingSchedule.id,
               shift_type: shiftType
             })
           } else {
-            // 新增排班
             await addSchedule({
               hospitalId: this.user.id,
               departmentId: this.selectedDepartment.id,
@@ -240,7 +355,6 @@ export default {
             })
           }
         } else {
-          // 选择休息，删除排班记录
           if (existingSchedule) {
             await deleteSchedule(existingSchedule.id)
           }
@@ -257,9 +371,7 @@ export default {
         const response = await getSchedulesByDepartment(
             this.user.id,
             this.selectedDepartment.id,
-            new Date(date),
-            new Date(date)
-        )
+            new Date(date))
         return response.data.find(
             item => item.doctorId === doctorId &&
                 parseTime(item.scheduleDate, '{y}-{m}-{d}') === date
@@ -274,6 +386,40 @@ export default {
       nextWeek.setDate(nextWeek.getDate() + 7)
       this.currentWeek = nextWeek
       this.fetchSchedules()
+      this.fetchLeaveInfo()
+    },
+
+    showLeaveDetail(leave, doctorName) {
+      this.currentLeave = leave;
+      this.currentDoctorName = doctorName;
+      this.leaveDetailVisible = true;
+    },
+
+    async handleLeaveAction(action) {
+      if(action == 1){
+        try {
+          console.log(action)
+          this.loading = true;
+          const id = this.currentLeave.id;
+          const response = await this.$request.post(`/api/schedule/leave/approve/${id}`);
+          if (response.code == 200) {
+            this.$message.success(`请假${action == '1' ? '通过' : '拒绝'}成功`);
+            await this.fetchLeaveInfo(); // 重新加载请假信息
+            this.leaveDetailVisible = false; // 关闭对话框
+          } else {
+            this.$message.error(response.message || '操作失败');
+          }
+        } catch (error) {
+          console.error('处理请假失败:', error);
+          this.$message.error('操作失败');
+        } finally {
+          this.loading = false;
+        }
+      }else{
+        await this.fetchLeaveInfo(); // 重新加载请假信息
+        this.leaveDetailVisible = false; // 关闭对话框
+      }
+
     }
   }
 }
@@ -287,5 +433,38 @@ export default {
 }
 .clearfix:after {
   clear: both;
+}
+
+.leave-info {
+  min-height: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.no-leave {
+  color: #999;
+  font-size: 12px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.app-container {
+  padding: 20px;
+}
+
+/* 新增样式 */
+.leave-detail {
+  padding: 10px;
+}
+
+.leave-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.leave-actions .el-button {
+  margin: 0 10px;
 }
 </style>

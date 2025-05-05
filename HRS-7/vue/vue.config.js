@@ -4,11 +4,11 @@ module.exports = defineConfig({
   devServer: {
     port: 8080
   },
-  chainWebpack: config =>{
-    config.plugin('html')
-        .tap(args => {
-          args[0].title = "管理系统";
-          return args;
-        })
+  chainWebpack: config => {
+      config.plugin('html')
+          .tap(args => {
+              args[0].title = "管理系统";
+              return args;
+          })
   }
 })

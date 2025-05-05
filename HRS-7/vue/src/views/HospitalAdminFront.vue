@@ -34,28 +34,22 @@
     <div class="admin-nav">
       <el-menu mode="horizontal" :default-active="activeMenu" router>
         <!-- 首页 -->
-        <el-menu-item index="/hospitalAdmin/hospital-information-management">
+        <el-menu-item @click="goToNotice">
           <template #title>
             <i class="el-icon-s-home"></i>
             <span>医院信息管理</span>
           </template>
         </el-menu-item>
 
-        <el-menu-item index="/hospitalAdmin/doctorManagement">
+        <el-menu-item @click="goToDoctorList">
           <template #title>
             <i class="el-icon-user-solid"></i>
             <span>医生管理</span>
           </template>
         </el-menu-item>
 
-        <el-menu-item index="/hospitalAdmin/doctor-rating">
-          <template #title>
-            <i class="el-icon-star-on"></i>
-            <span>医生评级</span>
-          </template>
-        </el-menu-item>
 
-        <el-menu-item index="/hospitalAdmin/performance-accounting">
+        <el-menu-item @click="gotoWorkLoad">
           <template #title>
             <i class="el-icon-s-data"></i>
             <span>绩效核算</span>
@@ -70,15 +64,13 @@
           </template>
         </el-menu-item>
 
-        <!-- 病历管理 -->
-        <el-menu-item index="/hospitalAdmin/order-management">
+        <el-menu-item @click="goToRegistration">
           <template #title>
             <i class="el-icon-tickets"></i>
             <span>订单管理</span>
           </template>
         </el-menu-item>
 
-        <!-- 物流申请 -->
         <el-menu-item index="/hospitalAdmin/warehouse-management">
           <template #title>
             <i class="el-icon-truck"></i>
@@ -86,8 +78,15 @@
           </template>
         </el-menu-item>
 
+        <el-menu-item @click="goToLogistics()">
+          <template #title>
+            <i class="el-icon-tickets"></i>
+            <span>物流管理</span>
+          </template>
+        </el-menu-item>
+
         <!-- 科普文章 -->
-        <el-menu-item index="/hospitalAdmin/popular-science-articles">
+        <el-menu-item @click="goToHealthArticle">
           <template #title>
             <i class="el-icon-document"></i>
             <span>科普文章</span>
@@ -117,7 +116,7 @@ export default {
   data() {
     return {
       user: JSON.parse(localStorage.getItem("xm-user") || '{}'),
-      activeMenu: "/hospitalAdmin/hospital-information-management" // 定义 activeMenu 并设置默认值
+      activeMenu: "/hospitalAdmin/hospital-information-management"
     };
   },
   created() {
@@ -151,6 +150,57 @@ export default {
           userId : this.user.id,
         },
       });
+    },
+    gotoWorkLoad(){
+      this.$router.push({
+        name: 'WorkloadStatistics',
+        query: {
+          userId : this.user.id,
+        }
+      })
+    },
+    goToDoctorList(){
+      this.$router.push({
+        name: 'DoctorList',
+        query: {
+          userId : this.user.id,
+        }
+      })
+    },
+
+    goToLogistics(){
+      this.$router.push({
+        name: 'Logistics',
+        query: {
+          userId : this.user.id,
+        }
+      })
+    },
+
+    goToRegistration(){
+      this.$router.push({
+        name: 'RegisterManagement',
+        query: {
+          userId : this.user.id,
+        }
+      })
+    },
+
+    goToHealthArticle(){
+      this.$router.push({
+        name: 'HealthArticle',
+        query: {
+          userId : this.user.id,
+        }
+      })
+    },
+    goToNotice(){
+      this.$router.push({
+        name: 'AdminNotice',
+        query: {
+          userId : this.user.id,
+        }
+      })
     }
   },
 };
